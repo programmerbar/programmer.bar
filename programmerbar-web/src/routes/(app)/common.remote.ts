@@ -7,6 +7,36 @@ export const getStatus = query(async () => {
 	return await locals.statusService.getWithMessage();
 });
 
+/**
+ * Check if message content contains spam patterns
+ */
+function isSpamMessage(message: string): boolean {
+	const lowerMessage = message.toLowerCase();
+
+	const spamPatterns = [
+		'bange',
+		'bangeshop.com',
+		'usb charging port',
+		'50% off',
+		'free shipping',
+		'backpacks.*sling bags',
+		'anti-theft design',
+		'waterproof.*anti-theft',
+		'built-in usb',
+		'order yours now'
+	];
+
+	let spamScore = 0;
+	for (const pattern of spamPatterns) {
+		if (new RegExp(pattern, 'i').test(lowerMessage)) {
+			spamScore++;
+		}
+	}
+
+	// If 2 or more spam patterns match, consider it spam
+	return spamScore >= 2;
+}
+
 const ContanctSubmissionSchema = z.object({
 	// Honeypot fields
 	name: z.string().optional(),
@@ -25,9 +55,16 @@ export const createContactSubmissionAction = form(
 		const { locals, getClientAddress } = event;
 		const ip = getClientAddress();
 
+		// Check honeypot fields
 		if (name || email) {
 			await locals.banService.ban(event);
+			return fail(400, { success: false });
+		}
 
+		// Check for spam in message content
+		if (isSpamMessage(messagekjkj)) {
+			console.log(`[ContactForm] 🚫 Spam detected from IP: ${ip}`);
+			await locals.banService.ban(event);
 			return fail(400, { success: false });
 		}
 

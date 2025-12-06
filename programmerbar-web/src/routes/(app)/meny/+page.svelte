@@ -1,6 +1,7 @@
 <script lang="ts">
 	import ProductPreview from '$lib/components/app/meny/ProductPreview.svelte';
 	import ProductSidebar from '$lib/components/app/meny/ProductSidebar.svelte';
+	import CLICommandDisplay from '$lib/components/app/meny/CLICommandDisplay.svelte';
 	import {
 		filterProducts,
 		extractBreweries,
@@ -32,10 +33,13 @@
 
 	<div class="flex-1">
 		{#if filteredProducts.length > 0}
-			<div class="border-border mb-4 border-b pb-2 font-mono">
-				<p class="text-foreground-muted mt-1 text-xs">
-					Viser {filteredProducts.length} resultater
-				</p>
+			<div class="border-border bg-card mb-4 border-2 font-mono">
+				<div class="flex flex-col gap-2 px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
+					<p class="text-foreground-secondary text-xs">
+						Viser {filteredProducts.length} {filteredProducts.length === 1 ? 'resultat' : 'resultater'}
+					</p>
+					<CLICommandDisplay {filter} {priceRange} inline />
+				</div>
 			</div>
 
 			<ul class="grid w-full grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">

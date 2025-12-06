@@ -5,6 +5,7 @@
 	import CLIMultipleSelect from './CLIMultipleSelect.svelte';
 	import CLISelect from './CLISelect.svelte';
 	import CLIPriceRangeSlider from './CLIPriceRangeSlider.svelte';
+	import CLICommandDisplay from './CLICommandDisplay.svelte';
 
 	type Props = {
 		filter: FilterState;
@@ -136,4 +137,7 @@
 			</button>
 		</div>
 	</div>
+
+	<!-- CLI Command Display -->
+	<!-- <CLICommandDisplay {filter} {priceRange} /> -->
 </div>

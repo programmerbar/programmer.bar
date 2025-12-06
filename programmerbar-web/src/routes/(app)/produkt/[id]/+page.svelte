@@ -127,7 +127,11 @@
 	type="product"
 />
 
-<CLIWindow title="cat produkt/{data.product._id}.txt" class="mx-auto w-full max-w-6xl">
+<CLIWindow
+	title="cat produkt/{data.product._id}.txt"
+	class="mx-auto w-full max-w-6xl"
+	onClose={() => window.history.back()}
+>
 	<!-- Window Content -->
 	<div class="flex-1 p-6 md:p-8">
 		<!-- Mobile Header - Only visible on mobile -->

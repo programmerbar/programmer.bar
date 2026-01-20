@@ -78,6 +78,7 @@
 							<div class="flex items-center gap-4">
 								<!-- Date Badge -->
 								<div
+									aria-hidden="true"
 									class="border-primary bg-primary hidden h-16 w-16 shrink-0 flex-col items-center justify-center border-2 text-white sm:flex"
 								>
 									<span class="text-xs leading-tight font-medium uppercase"
@@ -97,6 +98,7 @@
 									{#if eventTime}
 										<div class="text-foreground-secondary flex items-center gap-2 text-sm">
 											<span class="text-foreground-muted">[</span>
+											<span class="flex sm:hidden">{getDayNumber(date)}. {getMonth(date)}, </span>
 											<span>kl {eventTime}</span>
 											<span class="text-foreground-muted">]</span>
 										</div>

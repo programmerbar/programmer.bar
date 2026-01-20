@@ -12,8 +12,8 @@
 
 	let { data } = $props();
 
-	let types = extractTypes(data.products);
-	let breweries = extractBreweries(data.products);
+	const types = $derived(extractTypes(data.products));
+	const breweries = $derived(extractBreweries(data.products));
 	let filter = new FilterState();
 	let priceRange = $derived(extractPriceRange(data.products, filter.current.showStudentPrice));
 	let filteredProducts = $derived(filterProducts(data.products, filter));

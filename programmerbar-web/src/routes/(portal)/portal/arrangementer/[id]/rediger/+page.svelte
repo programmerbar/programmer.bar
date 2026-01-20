@@ -84,8 +84,7 @@
 			<ul class="mt-1 space-y-1">
 				{#if deletedShiftIds.length > 0}
 					<li>
-						• {deletedShiftIds.length} vakt{deletedShiftIds.length > 1 ? 'er' : ''} blir slettet ved
-						lagring
+						• {deletedShiftIds.length} vakt{deletedShiftIds.length > 1 ? 'er' : ''} blir slettet ved lagring
 					</li>
 				{/if}
 				{#if removedUserShifts.length > 0}

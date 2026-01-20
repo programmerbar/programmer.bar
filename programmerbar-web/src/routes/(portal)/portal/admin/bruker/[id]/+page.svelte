@@ -31,6 +31,11 @@
 
 	let userHasCompletedTraining = $state(data.user.isTrained || false);
 
+	$effect(() => {
+		user = data.user as User;
+		userHasCompletedTraining = data.user.isTrained || false;
+	});
+
 	let toastMessage = $state('');
 
 	function showToast(message: string) {

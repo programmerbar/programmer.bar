@@ -22,7 +22,7 @@
 	);
 	let submitText = $derived.by(() => (isUpdate ? 'Oppdater type' : 'Opprett type'));
 
-	let titleValue = $state(productType.title || '');
+	let titleValue = $state('');
 
 	// Update titleValue when productType prop changes
 	$effect(() => {

@@ -1,6 +1,5 @@
 import groq from 'groq';
-import imageUrlBuilder from '@sanity/image-url';
-import type { SanityImageSource } from '@sanity/image-url/lib/types/types';
+import imageUrlBuilder, { type SanityImageSource } from '@sanity/image-url';
 import { createClient } from '@sanity/client';
 
 export const ECHO_SANITY_PROJECT_ID = 'pgq2pd26';

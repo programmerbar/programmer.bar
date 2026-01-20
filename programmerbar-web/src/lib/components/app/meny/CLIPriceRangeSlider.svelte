@@ -9,8 +9,8 @@
 
 	let { min, max, value, onUpdate, label = 'Prisområde' }: Props = $props();
 
-	let minValue = $state(value.min);
-	let maxValue = $state(value.max);
+	let minValue = $state(min);
+	let maxValue = $state(max);
 
 	// Update internal values when props change
 	$effect(() => {

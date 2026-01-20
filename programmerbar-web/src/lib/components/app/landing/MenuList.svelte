@@ -11,6 +11,7 @@
 	let { products }: Props = $props();
 
 	const INTERVAL = 5000;
+	const MANUAL_INTERVAL = 10000;
 	const MAX = 6;
 	const TOTAL_PAGES = Math.ceil(products.length / MAX);
 
@@ -18,18 +19,26 @@
 	let start = $derived(currentPage * MAX);
 	let end = $derived(start + MAX);
 
+	let delay = $state(INTERVAL);
+
 	$effect(() => {
 		const interval = setInterval(() => {
 			currentPage = (currentPage + 1) % TOTAL_PAGES;
-		}, INTERVAL);
+			delay = INTERVAL;
+		}, delay);
 
 		return () => clearInterval(interval);
 	});
+
+	function goToPage(index: number) {
+		currentPage = (index + TOTAL_PAGES) % TOTAL_PAGES;
+
+		delay = MANUAL_INTERVAL;
+	}
 </script>
 
 <CLIWindow title="cat meny.txt">
-	<!-- Window Content -->
-	<div class="flex flex-1 flex-col p-6 md:p-8">
+	<div class="flex flex-1 flex-col p-6 md:p-8" aria-hidden="true">
 		<ul class="flex flex-1 flex-col gap-4 overflow-hidden">
 			{#each products.slice(start, end) as product (product._id)}
 				{@const { _id, name, producer, priceList, image } = product}
@@ -93,20 +102,34 @@
 					</a>
 				</li>
 			{/each}
-		</ul>
-
-		{#if TOTAL_PAGES > 1}
-			<div class="border-border mt-auto flex items-center justify-end gap-2 border-t pt-4">
-				{#each Array.from({ length: TOTAL_PAGES }, (_, i) => i) as i (i)}
-					<button
-						onclick={() => (currentPage = i)}
-						class="h-1.5 rounded-full transition-all duration-300 {i === currentPage
-							? 'bg-primary w-6'
-							: 'bg-border-light hover:bg-border w-1.5'}"
-						aria-label="Side {i + 1}"
-					></button>
-				{/each}
+			{#if TOTAL_PAGES > 1}
+			<div class="h-6 border-border mt-auto flex items-center gap-1 ">
+				<button
+					onclick={() => (goToPage(currentPage - 1))}
+					class="md:w-10 w-15 h-5 min-w-fit pt-0.5 pb-0.5 text-xs cursor-pointer pl-2 pr-2 transition-all duration-300
+					 hover:bg-border-light rounded-full"
+					aria-label="Forrige Side"
+				>{"<<"}</button>
+				<div class="flex w-fitt gap-1 w-1/1">
+					{#each Array.from({ length: TOTAL_PAGES }, (_, i) => i) as i (i)}
+						<button
+							onclick={() => (goToPage(i))}
+							class="m-auto text-center h-3 pt-0.5 pb-0.5 rounded-full cursor-pointer pl-2 pr-2 transition-all duration-300 
+								{i === currentPage % TOTAL_PAGES
+								? "bg-primary min-w-fit w-1/3 h-4"
+								: 'bg-border-light min-w-fit w-1/5 hover:bg-border hover:h-3.5'}"
+							aria-label="Side {i + 1}"
+						></button>
+					{/each}
+				</div>
+				<button
+					onclick={() => (goToPage(currentPage + 1))}
+					class="md:w-10 w-15 h-5 min-w-fit pt-0.5 pb-0.5 text-xs cursor-pointer pl-2 pr-2 transition-all duration-300
+					hover:bg-border-light rounded-full"
+					aria-label="Neste Side"
+				>{">>"}</button>
 			</div>
 		{/if}
+		</ul>
 	</div>
 </CLIWindow>

@@ -38,6 +38,7 @@
 </script>
 
 <CLIWindow title="cat meny.txt">
+	<!-- Window Content -->
 	<div class="flex flex-1 flex-col p-6 md:p-8" aria-hidden="true">
 		<ul class="flex flex-1 flex-col gap-4 overflow-hidden">
 			{#each products.slice(start, end) as product (product._id)}

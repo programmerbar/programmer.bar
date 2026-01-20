@@ -25,8 +25,8 @@
 	let submitText = $derived.by(() => (isUpdate ? 'Oppdater Produsent' : 'Opprett Produsent'));
 
 	let formData = $state({
-		name: producer.name || '',
-		imageId: producer.imageId || null
+		name: '',
+		imageId: null as string | null
 	});
 
 	// Update formData when producer prop changes

@@ -11,11 +11,16 @@
 	import type { SubmitFunction } from './$types.js';
 
 	let { data } = $props();
-	let user = data.user as User;
+	let user = $derived(data.user as User);
 
 	let editForm = $state({
 		altEmail: user.altEmail || '',
 		phone: user.phone || ''
+	});
+
+	$effect(() => {
+		editForm.altEmail = data.user.altEmail || '';
+		editForm.phone = data.user.phone || '';
 	});
 
 	let isSubmitting = $state(false);

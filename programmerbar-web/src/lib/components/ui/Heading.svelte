@@ -8,7 +8,7 @@
 
 	let { level = 1, class: className, children, ...props }: Props = $props();
 
-	let tag = `h${level}` as const;
+	const tag = $derived(`h${level}` as const);
 </script>
 
 <svelte:element

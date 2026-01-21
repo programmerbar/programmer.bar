@@ -104,32 +104,32 @@
 				</li>
 			{/each}
 			{#if TOTAL_PAGES > 1}
-			<div class="h-6 border-border mt-auto flex items-center gap-1 ">
-				<button
-					onclick={() => (goToPage(currentPage - 1))}
-					class="md:w-10 w-15 h-5 min-w-fit pt-0.5 pb-0.5 text-xs cursor-pointer pl-2 pr-2 transition-all duration-300
-					hover:bg-border-light rounded-full"
-					aria-label="Forrige Side"
-				>&lt;&lt;</button>
-				<div class="flex w-fitt gap-1 w-1/1">
-					{#each Array.from({ length: TOTAL_PAGES }, (_, i) => i) as i (i)}
-						<button
-							onclick={() => (goToPage(i))}
-							class="m-auto text-center h-3 pt-0.5 pb-0.5 rounded-full cursor-pointer pl-2 pr-2 transition-all duration-300 
+				<div class="border-border mt-auto flex h-6 items-center gap-1">
+					<button
+						onclick={() => goToPage(currentPage - 1)}
+						class="hover:bg-border-light h-5 w-15 min-w-fit cursor-pointer rounded-full pt-0.5 pr-2 pb-0.5 pl-2 text-xs transition-all
+					duration-300 md:w-10"
+						aria-label="Forrige Side">&lt;&lt;</button
+					>
+					<div class="w-fitt flex w-1/1 gap-1">
+						{#each Array.from({ length: TOTAL_PAGES }, (_, i) => i) as i (i)}
+							<button
+								onclick={() => goToPage(i)}
+								class="m-auto h-3 cursor-pointer rounded-full pt-0.5 pr-2 pb-0.5 pl-2 text-center transition-all duration-300
 								{i === currentPage % TOTAL_PAGES
-								? "bg-primary min-w-fit w-1/3 h-4"
-								: 'bg-border-light min-w-fit w-1/5 hover:bg-border hover:h-3.5'}"
-							aria-label="Side {i + 1}"
-						></button>
-					{/each}
+									? 'bg-primary h-4 w-1/3 min-w-fit'
+									: 'bg-border-light hover:bg-border w-1/5 min-w-fit hover:h-3.5'}"
+								aria-label="Side {i + 1}"
+							></button>
+						{/each}
+					</div>
+					<button
+						onclick={() => goToPage(currentPage + 1)}
+						class="hover:bg-border-light h-5 w-15 min-w-fit cursor-pointer rounded-full pt-0.5 pr-2 pb-0.5 pl-2 text-xs transition-all
+					duration-300 md:w-10"
+						aria-label="Neste Side">&gt;&gt;</button
+					>
 				</div>
-				<button
-					onclick={() => (goToPage(currentPage + 1))}
-					class="md:w-10 w-15 h-5 min-w-fit pt-0.5 pb-0.5 text-xs cursor-pointer pl-2 pr-2 transition-all duration-300
-					hover:bg-border-light rounded-full"
-					aria-label="Neste Side"
-				>&gt;&gt;</button>
-			</div>
 			{/if}
 		</ul>
 	</div>

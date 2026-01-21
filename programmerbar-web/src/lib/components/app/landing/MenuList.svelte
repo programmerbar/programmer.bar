@@ -13,7 +13,7 @@
 	const INTERVAL = 5000;
 	const MANUAL_INTERVAL = 10000;
 	const MAX = 6;
-	const TOTAL_PAGES = Math.ceil(products.length / MAX);
+	const TOTAL_PAGES = $derived(Math.ceil(products.length / MAX));
 
 	let currentPage = $state(0);
 	let start = $derived(currentPage * MAX);

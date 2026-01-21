@@ -62,22 +62,22 @@
 	});
 
 	let formData = $state({
-		name: product.name,
-		description: product.description,
-		sku: product.sku,
-		ordinaryPrice: product.ordinaryPrice,
-		studentPrice: product.studentPrice,
-		internalPrice: product.internalPrice,
-		credits: product.credits,
-		volume: product.volume,
-		alcoholContent: product.alcoholContent,
-		variants: product.variants,
-		producerId: product.producerId ?? '',
-		imageId: product.imageId,
-		isSoldOut: product.isSoldOut || false
+		name: '',
+		description: '',
+		sku: '',
+		ordinaryPrice: undefined as number | undefined,
+		studentPrice: undefined as number | undefined,
+		internalPrice: undefined as number | undefined,
+		credits: undefined as number | undefined,
+		volume: undefined as number | undefined,
+		alcoholContent: undefined as number | undefined,
+		variants: '',
+		producerId: '',
+		imageId: null as string | null,
+		isSoldOut: false
 	});
 
-	let selectedProductTypes = new SvelteSet<string>(product.productTypeIds || []);
+	let selectedProductTypes = new SvelteSet<string>();
 
 	const handleSubmit: SubmitFunction = () => {
 		return async ({ update }) => {
@@ -93,13 +93,13 @@
 			formData.name = product.name || '';
 			formData.description = product.description || '';
 			formData.sku = product.sku || '';
-			formData.ordinaryPrice = product.ordinaryPrice;
-			formData.studentPrice = product.studentPrice;
-			formData.internalPrice = product.internalPrice;
-			formData.credits = product.credits;
-			formData.volume = product.volume;
-			formData.alcoholContent = product.alcoholContent;
-			formData.variants = product.variants || '';
+			formData.ordinaryPrice = product.ordinaryPrice ?? undefined;
+			formData.studentPrice = product.studentPrice ?? undefined;
+			formData.internalPrice = product.internalPrice ?? undefined;
+			formData.credits = product.credits ?? undefined;
+			formData.volume = product.volume ?? undefined;
+			formData.alcoholContent = product.alcoholContent ?? undefined;
+			formData.variants = (product.variants as string) || '';
 			formData.producerId = product.producerId || '';
 			// Only update imageId if we don't already have one set by the user
 			if (!formData.imageId || formData.imageId === product.imageId) {
@@ -122,8 +122,10 @@
 		}
 	};
 
-	const producerOptions = producers?.map((p) => ({ value: p.id, label: p.name })) || [];
-	const productTypeOptions = productTypes?.map((pt) => ({ id: pt.id, label: pt.title })) || [];
+	const producerOptions = $derived(producers?.map((p) => ({ value: p.id, label: p.name })) || []);
+	const productTypeOptions = $derived(
+		productTypes?.map((pt) => ({ id: pt.id, label: pt.title })) || []
+	);
 
 	let studentDiscount = $derived.by(() =>
 		formData.ordinaryPrice && formData.studentPrice

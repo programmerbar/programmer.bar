@@ -31,11 +31,11 @@
 	type EventWithTime = typeof data.event & {
 		startTime?: string | { hour: number; minute: number };
 	};
-	const event = data.event as EventWithTime;
+	const event = $derived(data.event as EventWithTime);
 
 	let shareText = $state('Del arrangementet');
 
-	let html = marked.parse(data.event.body ?? '');
+	const html = $derived(marked.parse(data.event.body ?? ''));
 
 	function handleShare() {
 		if (navigator.share) {
@@ -51,9 +51,10 @@
 	}
 
 	// SEO data
-	const eventDescription =
+	const eventDescription = $derived(
 		data.event.body?.slice(0, 160) ||
-		`${data.event.title} - Arrangement hos Programmerbar den ${formatDate(data.event.date)}`;
+			`${data.event.title} - Arrangement hos Programmerbar den ${formatDate(data.event.date)}`
+	);
 </script>
 
 <SEO

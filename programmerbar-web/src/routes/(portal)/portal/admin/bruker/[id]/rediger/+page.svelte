@@ -12,12 +12,18 @@
 	import type { SubmitFunction } from './$types.js';
 
 	let { data } = $props();
-	let user = data.user as User;
+	let user = $derived(data.user as User);
 
 	let editForm = $state({
 		role: user.role,
 		phone: user.phone || '',
 		canRefer: user.canRefer ?? true
+	});
+
+	$effect(() => {
+		editForm.role = data.user.role;
+		editForm.phone = data.user.phone || '';
+		editForm.canRefer = data.user.canRefer ?? true;
 	});
 
 	let isSubmitting = $state(false);

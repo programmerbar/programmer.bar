@@ -15,15 +15,15 @@
 
 	let { data } = $props();
 
-	const html = marked(data.product.description ?? '');
+	const html = $derived(marked(data.product.description ?? ''));
 	const isAuthenticated = $derived(page.data.user);
 	const canClaimProduct = $derived.by(
 		() => isAuthenticated && data.product.priceList.credits && data.product.priceList.credits > 0
 	);
 
-	const variants = data.product.variants?.map((variant) => variant) ?? [];
+	const variants = $derived(data.product.variants?.map((variant) => variant) ?? []);
 
-	const metadata = [
+	const metadata = $derived([
 		{ title: 'Produsent', value: data.product.producer ?? 'Ingen' },
 		{
 			title: 'Alkoholinnhold',
@@ -43,14 +43,14 @@
 		...(data.product.priceList.credits && data.product.priceList.credits > 0
 			? [{ title: 'Bong pris', value: data.product.priceList.credits }]
 			: [])
-	];
+	]);
 
 	type ClaimFeedback = {
 		type: 'success' | 'error';
 		message: string;
 	};
 
-	const creditCost = data.product.priceList.credits ?? 0;
+	const creditCost = $derived(data.product.priceList.credits ?? 0);
 
 	let claimLoading = $state(false);
 	let claimFeedback = $state<ClaimFeedback | null>(null);
@@ -63,12 +63,13 @@
 	let imageLoaded = $state(false);
 
 	// SEO data
-	const productImage = data.product.image
-		? urlFor(data.product.image).width(2000).quality(95).url()
-		: undefined;
-	const productDescription =
+	const productImage = $derived(
+		data.product.image ? urlFor(data.product.image).width(2000).quality(95).url() : undefined
+	);
+	const productDescription = $derived(
 		data.product.description ||
-		`${data.product.name} - ${data.product.producer || 'Ukjent produsent'} - Pris fra ${data.product.priceList.student} kr`;
+			`${data.product.name} - ${data.product.producer || 'Ukjent produsent'} - Pris fra ${data.product.priceList.student} kr`
+	);
 
 	function openConfirmation() {
 		claimFeedback = null;

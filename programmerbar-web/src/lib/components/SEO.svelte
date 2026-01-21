@@ -30,16 +30,14 @@
 	}: Props = $props();
 
 	const baseUrl = 'https://programmer.bar';
-	const fullImageUrl = image.startsWith('http') ? image : `${baseUrl}${image}`;
-	const fullCanonicalUrl = canonical
-		? canonical.startsWith('http')
-			? canonical
-			: `${baseUrl}${canonical}`
-		: undefined;
+	const fullImageUrl = $derived(image.startsWith('http') ? image : `${baseUrl}${image}`);
+	const fullCanonicalUrl = $derived(
+		canonical ? (canonical.startsWith('http') ? canonical : `${baseUrl}${canonical}`) : undefined
+	);
 
-	const pageTitle = title === 'Programmerbar' ? title : `${title} - Programmerbar`;
-	const robotsContent = [noindex ? 'noindex' : 'index', nofollow ? 'nofollow' : 'follow'].join(
-		', '
+	const pageTitle = $derived(title === 'Programmerbar' ? title : `${title} - Programmerbar`);
+	const robotsContent = $derived(
+		[noindex ? 'noindex' : 'index', nofollow ? 'nofollow' : 'follow'].join(', ')
 	);
 </script>
 

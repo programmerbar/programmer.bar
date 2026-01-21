@@ -95,7 +95,7 @@
 										</p>
 									</div>
 									<div class="text-foreground-muted">
-										<span class="text-sm">></span>
+										<span class="text-sm">&gt;</span>
 									</div>
 								</div>
 							</div>
@@ -108,9 +108,9 @@
 				<button
 					onclick={() => (goToPage(currentPage - 1))}
 					class="md:w-10 w-15 h-5 min-w-fit pt-0.5 pb-0.5 text-xs cursor-pointer pl-2 pr-2 transition-all duration-300
-					 hover:bg-border-light rounded-full"
+					hover:bg-border-light rounded-full"
 					aria-label="Forrige Side"
-				>{"<<"}</button>
+				>&lt;&lt;</button>
 				<div class="flex w-fitt gap-1 w-1/1">
 					{#each Array.from({ length: TOTAL_PAGES }, (_, i) => i) as i (i)}
 						<button
@@ -128,9 +128,9 @@
 					class="md:w-10 w-15 h-5 min-w-fit pt-0.5 pb-0.5 text-xs cursor-pointer pl-2 pr-2 transition-all duration-300
 					hover:bg-border-light rounded-full"
 					aria-label="Neste Side"
-				>{">>"}</button>
+				>&gt;&gt;</button>
 			</div>
-		{/if}
+			{/if}
 		</ul>
 	</div>
 </CLIWindow>

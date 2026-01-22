@@ -15,10 +15,10 @@
 		>
 			<!-- Information Section -->
 			<div class="space-y-4 text-center md:text-left">
-				<h3 class="text-sm font-semibold tracking-wider uppercase opacity-70">Informasjon</h3>
+				<h3 class="font-semibold tracking-wider uppercase opacity-70">Informasjon</h3>
 				<div class="space-y-2 text-base">
-					<p class="font-medium">echo Programmerbar</p>
-					<p class="text-sm opacity-80">
+					<p>echo Programmerbar</p>
+					<p class="opacity-80">
 						Org. nr.: <a
 							class="transition-opacity hover:opacity-100"
 							href="https://www.proff.no/selskap/echo-programmerbar/bergen/medlemsorganisasjoner/IFC3FCQ10PU/"
@@ -30,9 +30,7 @@
 
 			<!-- Partner Section -->
 			<div class="space-y-4 text-center">
-				<h3 class="text-sm font-semibold tracking-wider uppercase opacity-70">
-					Hovedsamarbeidspartner
-				</h3>
+				<h3 class="font-semibold tracking-wider uppercase opacity-70">Hovedsamarbeidspartner</h3>
 				<a
 					href="https://lervig.no"
 					class="inline-block transition-opacity hover:opacity-80"
@@ -44,7 +42,7 @@
 
 			<!-- Contact Section -->
 			<div class="space-y-4 text-center md:text-right">
-				<h3 class="text-sm font-semibold tracking-wider uppercase opacity-70">Kontakt oss</h3>
+				<h3 class="font-semibold tracking-wider uppercase opacity-70">Kontakt oss</h3>
 				<div class="space-y-2 text-base">
 					<div>
 						<a
@@ -60,6 +58,12 @@
 							href="mailto:hei@programmerbar.no">hei@programmerbar.no</a
 						>
 					</div>
+					<p class="opacity-80">
+						Leder nr.:
+						<a class="opacity-80 transition-opacity hover:opacity-100" href="tel:+4791992320"
+							>919 92 320</a
+						>
+					</p>
 				</div>
 			</div>
 		</div>

@@ -6,6 +6,7 @@ packages:
 onlyBuiltDependencies:
   - '@nestjs/core'
   - '@openapitools/openapi-generator-cli'
+  - '@swc/core'
   - '@tailwindcss/oxide'
   - esbuild
   - protobufjs

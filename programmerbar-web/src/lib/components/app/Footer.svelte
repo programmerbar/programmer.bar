@@ -59,7 +59,7 @@
 						>
 					</div>
 					<p class="opacity-80">
-						Leder nr.:
+						Leder tel:
 						<a class="opacity-80 transition-opacity hover:opacity-100" href="tel:+4791992320"
 							>919 92 320</a
 						>

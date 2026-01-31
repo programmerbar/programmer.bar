@@ -79,16 +79,13 @@ export class EmailService {
 		this.#resend = resend;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	async sendContactUsEmail(_data: ContactUsEmailProps) {
-		// await this.sendEmail({
-		// 	from: FROM_EMAIL,
-		// 	subject: 'Kontaktskjema på hjemmesiden',
-		// 	to: [PROGRAMMERBAR_EMAIL],
-		// 	react: <ContactUsEmail {...data} />
-		// });
-
-		console.log(`[EmailService] ✅ Email sent via Resend`);
+	async sendContactUsEmail(data: ContactUsEmailProps) {
+		await this.sendEmail({
+			from: FROM_EMAIL,
+			subject: 'Kontaktskjema på hjemmesiden',
+			to: [PROGRAMMERBAR_EMAIL],
+			react: <ContactUsEmail {...data} />
+		});
 	}
 
 	async sendInvitaitonEmail(data: InvitationEmailProps) {

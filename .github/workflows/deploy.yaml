@@ -13,6 +13,8 @@ jobs:
     env:
       RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
       PUBLIC_GITHUB_SHA: ${{ github.sha }}
+      PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY: ${{ secrets.PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY }}
+      CLOUDFLARE_TURNSTILE_SECRET_KEY: ${{ secrets.CLOUDFLARE_TURNSTILE_SECRET_KEY }}
 
     steps:
       - name: 🔍 Checkout

@@ -2,6 +2,8 @@
 	import { toast } from 'svelte-sonner';
 	import { createContactSubmissionAction } from '../../../../routes/(app)/common.remote';
 	import CLIWindow from '$lib/components/app/CLIWindow.svelte';
+	import { Turnstile } from 'svelte-turnstile';
+	import { env } from '$env/dynamic/public';
 </script>
 
 <CLIWindow title="nano kontakt.txt" class="h-full">
@@ -52,6 +54,13 @@
 					class="border-border bg-card-muted text-foreground-primary focus:border-primary min-h-20 w-full resize-none border-2 px-3 py-2 font-mono text-sm focus:ring-0 focus:outline-none"
 				></textarea>
 			</label>
+
+			<Turnstile
+				siteKey={env.PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY!}
+				responseFieldName="cfTurnstileResponse"
+				{...createContactSubmissionAction.fields.cfTurnstileResponse.as('text')}
+				class="cf-turnstile my-2"
+			/>
 
 			<button
 				type="submit"

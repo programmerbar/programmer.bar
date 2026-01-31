@@ -89,7 +89,7 @@ export const createContactSubmissionAction = form(
 		});
 
 		try {
-			await locals.emailService.sendContactUsEmail(data);
+			await locals.emailService.sendContactUsSlackMessage(data);
 
 			return { success: true };
 		} catch (error) {

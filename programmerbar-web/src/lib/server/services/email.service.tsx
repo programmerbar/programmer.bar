@@ -1,6 +1,5 @@
 import { dev } from '$app/environment';
 import {
-	ContactUsEmail,
 	InvitationEmail,
 	NewShiftEmail,
 	VoulenteerRequestEmail
@@ -8,8 +7,8 @@ import {
 import type { CreateEmailOptions, Resend } from 'resend';
 import { formatDate, normalDate } from '$lib/utils/date';
 import { render } from '@react-email/render';
+import { env } from '$env/dynamic/private';
 
-const PROGRAMMERBAR_EMAIL = 'styret@programmerbar.no';
 const FROM_EMAIL = 'ikkesvar@programmer.bar';
 
 export type ContactUsEmailProps = {
@@ -79,12 +78,67 @@ export class EmailService {
 		this.#resend = resend;
 	}
 
-	async sendContactUsEmail(data: ContactUsEmailProps) {
-		await this.sendEmail({
-			from: FROM_EMAIL,
-			subject: 'Kontaktskjema på hjemmesiden',
-			to: [PROGRAMMERBAR_EMAIL],
-			react: <ContactUsEmail {...data} />
+	async sendContactUsSlackMessage(data: ContactUsEmailProps) {
+		const blocks = [
+			{
+				type: 'header',
+				text: {
+					type: 'plain_text',
+					text: '📬 Ny kontaktskjema-henvendelse',
+					emoji: true
+				}
+			},
+			{
+				type: 'section',
+				fields: [
+					{
+						type: 'mrkdwn',
+						text: `*Navn:*\n${data.name}`
+					},
+					{
+						type: 'mrkdwn',
+						text: `*E-post:*\n${data.email}`
+					}
+				]
+			},
+			{
+				type: 'divider'
+			},
+			{
+				type: 'section',
+				text: {
+					type: 'mrkdwn',
+					text: `*Melding:*\n${data.message}`
+				}
+			},
+			{
+				type: 'context',
+				elements: [
+					{
+						type: 'mrkdwn',
+						text: `Mottatt: <!date^${Math.floor(Date.now() / 1000)}^{date_num} {time_secs}|${new Date().toISOString()}>`
+					}
+				]
+			}
+		];
+
+		if (!env.SLACK_WEBHOOK_URL) {
+			console.error('SLACK_WEBHOOK_URL is not defined');
+			return;
+		}
+
+		if (dev) {
+			console.log('Dev environment detected, skipping Slack webhook post.');
+			console.log(JSON.stringify({ blocks }, null, 2));
+			return;
+		}
+
+		await fetch(env.SLACK_WEBHOOK_URL, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ blocks })
 		});
 	}
 

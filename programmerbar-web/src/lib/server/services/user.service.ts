@@ -9,9 +9,10 @@ export class UserService {
 		this.#db = db;
 	}
 
-	async findByFeideId(feideId: string) {
+	async findByFeideId(feideId: string, options?: { includeDeleted: boolean }) {
 		const user = await this.#db.query.users.findFirst({
-			where: (row, { eq, not, and }) => and(eq(row.feideId, feideId), not(row.isDeleted))
+			where: (row, { eq, not, and }) =>
+				and(eq(row.feideId, feideId), options?.includeDeleted ? undefined : not(row.isDeleted))
 		});
 
 		if (!user) {
@@ -123,6 +124,18 @@ export class UserService {
 
 		console.log(`[UserService] ✅ User soft deleted: ${deletedUser.id} (${deletedUser.email})`);
 		return deletedUser;
+	}
+
+	async restoreUser(userId: string) {
+		const restoredUser = await this.#db
+			.update(users)
+			.set({ isDeleted: false })
+			.where(eq(users.id, userId))
+			.returning()
+			.then((rows) => rows[0]);
+
+		console.log(`[UserService] ✅ User restored: ${restoredUser.id} (${restoredUser.email})`);
+		return restoredUser;
 	}
 
 	async findByIdIncludeDeleted(userId: string) {

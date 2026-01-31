@@ -26,13 +26,18 @@ export const actions: Actions = {
 		const email = data.get('email') as string;
 		const feideId = data.get('feideId') as string;
 
-		const userId = nanoid();
-		await locals.userService.create({
-			id: userId,
-			name,
-			email,
-			feideId
-		});
+		const existingUser = await locals.userService.findByFeideId(feideId, { includeDeleted: true });
+		if (existingUser) {
+			await locals.userService.restoreUser(existingUser.id);
+		} else {
+			const userId = nanoid();
+			await locals.userService.create({
+				id: userId,
+				name,
+				email,
+				feideId
+			});
+		}
 
 		await locals.pendingApplicationService.delete(applicationId);
 

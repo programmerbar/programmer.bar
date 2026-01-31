@@ -4,9 +4,9 @@ import type {
 } from '@programmerbar/cms/types';
 import { sanityClient } from './client';
 import { GET_PRODUCTS_QUERY, GET_PRODUCT_BY_ID_QUERY } from '@programmerbar/cms/queries';
-import imageUrlBuilder, { type SanityImageSource } from '@sanity/image-url';
+import { type SanityImageSource, createImageUrlBuilder } from '@sanity/image-url';
 
-const builder = imageUrlBuilder(sanityClient);
+const builder = createImageUrlBuilder(sanityClient);
 
 export type Image = SanityImageSource;
 

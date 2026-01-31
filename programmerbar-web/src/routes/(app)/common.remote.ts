@@ -1,4 +1,5 @@
 import { form, getRequestEvent, query } from '$app/server';
+import { validateTurnstile } from '$lib/server/turnstile';
 import { fail } from '@sveltejs/kit';
 import z from 'zod';
 
@@ -45,12 +46,13 @@ const ContanctSubmissionSchema = z.object({
 	// Actual fields
 	namekjkj: z.string().min(1, 'Name is required'),
 	emailkjkj: z.email('Invalid email address'),
-	messagekjkj: z.string().min(1, 'Message is required')
+	messagekjkj: z.string().min(1, 'Message is required'),
+	'cf-turnstile-response': z.string().min(1, 'CAPTCHA verification is required')
 });
 
 export const createContactSubmissionAction = form(
 	ContanctSubmissionSchema,
-	async ({ name, email, namekjkj, emailkjkj, messagekjkj }) => {
+	async ({ name, email, namekjkj, emailkjkj, messagekjkj, 'cf-turnstile-response': token }) => {
 		const event = getRequestEvent();
 		const { locals, getClientAddress } = event;
 		const ip = getClientAddress();
@@ -59,6 +61,12 @@ export const createContactSubmissionAction = form(
 		if (name || email) {
 			await locals.banService.ban(event);
 			return fail(400, { success: false });
+		}
+
+		const validation = await validateTurnstile(token, ip);
+		if (!validation.success) {
+			console.log(`[ContactForm] 🚫 Turnstile validation failed from IP: ${ip}`);
+			return fail(400, { success: false, error: 'CAPTCHA verification failed' });
 		}
 
 		// Check for spam in message content

@@ -3,7 +3,7 @@
 	import { createContactSubmissionAction } from '../../../../routes/(app)/common.remote';
 	import CLIWindow from '$lib/components/app/CLIWindow.svelte';
 	import { Turnstile } from 'svelte-turnstile';
-	import { env } from '$env/dynamic/public';
+	import { PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY } from '$env/static/public';
 </script>
 
 <CLIWindow title="nano kontakt.txt" class="h-full">
@@ -56,7 +56,7 @@
 			</label>
 
 			<Turnstile
-				siteKey={env.PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY!}
+				siteKey={PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY}
 				responseFieldName="cfTurnstileResponse"
 				{...createContactSubmissionAction.fields.cfTurnstileResponse.as('text')}
 				class="cf-turnstile my-2"

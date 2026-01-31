@@ -8,8 +8,14 @@ export const validateTurnstile = async (
 		return { success: false, 'error-codes': ['missing-input-response'] };
 	}
 
+	const secret = env.CLOUDFLARE_TURNSTILE_SITE_SECRET;
+	if (!secret) {
+		console.error('Turnstile site secret is not configured.');
+		return { success: false, 'error-codes': ['configuration-error'] };
+	}
+
 	const formData = new FormData();
-	formData.append('secret', env.CLOUDFLARE_TURNSTILE_SITE_SECRET!);
+	formData.append('secret', secret);
 	formData.append('response', token);
 	formData.append('remoteip', remoteip);
 

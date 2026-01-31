@@ -59,6 +59,7 @@ export const createContactSubmissionAction = form(
 
 		// Check honeypot fields
 		if (name || email) {
+			console.log(`[ContactForm] 🚫 Honeypot triggered from IP: ${ip}`);
 			await locals.banService.ban(event);
 			return fail(400, { success: false });
 		}

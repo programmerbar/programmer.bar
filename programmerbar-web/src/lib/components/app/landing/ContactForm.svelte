@@ -4,8 +4,12 @@
 	import CLIWindow from '$lib/components/app/CLIWindow.svelte';
 	import { Turnstile } from 'svelte-turnstile';
 	import { PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY } from '$env/static/public';
+	import { getThemeContext } from '$lib/states/theme.svelte';
 
 	let turnstileToken = $state('');
+
+	let themeContext = getThemeContext();
+	let theme: 'light' | 'dark' = $derived(themeContext.isDark ? 'dark' : 'light');
 </script>
 
 <CLIWindow title="nano kontakt.txt" class="h-full">
@@ -65,6 +69,7 @@
 				on:callback={(e) => {
 					turnstileToken = e.detail.token;
 				}}
+				{theme}
 			/>
 
 			<button

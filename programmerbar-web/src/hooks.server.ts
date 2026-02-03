@@ -22,6 +22,7 @@ import { Resend } from 'resend';
 import { ImageService } from '$lib/server/services/image.service';
 import { ReferralService } from '$lib/server/services/referral.service';
 import { PendingApplicationService } from '$lib/server/services/pending-application.service';
+import { RateLimitService } from '$lib/server/services/rate-limit.service';
 import { csrf } from '$lib/server/csrf';
 import { handleErrorWithSentry, initCloudflareSentryHandle, sentryHandle } from '@sentry/sveltekit';
 
@@ -67,6 +68,7 @@ const setup: Handle = async ({ event, resolve }) => {
 
 	// Setup services
 	event.locals.statusService = new StatusService(STATUS_KV);
+	event.locals.rateLimitService = new RateLimitService(STATUS_KV);
 	event.locals.emailService = new EmailService(resend);
 	event.locals.invitationService = new InvitationService(db);
 	event.locals.userService = new UserService(db);

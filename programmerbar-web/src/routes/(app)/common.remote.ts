@@ -1,12 +1,7 @@
-import { form, getRequestEvent, query } from '$app/server';
+import { form, getRequestEvent } from '$app/server';
 import { validateTurnstile } from '$lib/server/turnstile';
 import { fail } from '@sveltejs/kit';
 import z from 'zod';
-
-export const getStatus = query(async () => {
-	const { locals } = getRequestEvent();
-	return await locals.statusService.getWithMessage();
-});
 
 /**
  * Check if message content contains spam patterns

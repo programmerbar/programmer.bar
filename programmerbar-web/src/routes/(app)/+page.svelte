@@ -4,10 +4,11 @@
 	import Hero from '$lib/components/app/landing/Hero.svelte';
 	import Map from '$lib/components/app/landing/Map.svelte';
 	import MenuList from '$lib/components/app/landing/MenuList.svelte';
+	import StatusBanner from '$lib/components/app/landing/StatusBanner.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 
 	let { data } = $props();
-	let { products, events } = $derived(data);
+	let { products, events, status } = $derived(data);
 </script>
 
 <SEO
@@ -17,6 +18,8 @@
 	canonical="/"
 	type="website"
 />
+
+<StatusBanner {status} />
 
 <!-- Hero Section -->
 <Hero />

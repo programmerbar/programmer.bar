@@ -26,7 +26,7 @@ export class StatusService {
 	async getWithMessage() {
 		const status = await this.get();
 		return {
-			status,
+			code: status,
 			message: StatusService.getMessage(status)
 		};
 	}

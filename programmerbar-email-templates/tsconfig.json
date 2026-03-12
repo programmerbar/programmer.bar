@@ -24,6 +24,6 @@
     "allowSyntheticDefaultImports": true,
     "jsx": "react-jsx"
   },
-  "include": ["templates"],
+  "include": ["emails"],
   "exclude": ["node_modules"]
 }

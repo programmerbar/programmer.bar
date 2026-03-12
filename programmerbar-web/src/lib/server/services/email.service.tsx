@@ -2,6 +2,7 @@ import { dev } from '$app/environment';
 import {
 	InvitationEmail,
 	NewShiftEmail,
+	ShiftCancelledEmail,
 	VoulenteerRequestEmail
 } from '@programmerbar/email-templates';
 import type { CreateEmailOptions, Resend } from 'resend';
@@ -35,6 +36,17 @@ export type ShiftEmailProps = {
 		endAtFormatted: string;
 		summary: string;
 		description?: string;
+	};
+	user: {
+		name: string;
+		email: string;
+	};
+};
+
+export type ShiftCancelledEmailProps = {
+	event: {
+		name: string;
+		date: string;
 	};
 	user: {
 		name: string;
@@ -175,6 +187,15 @@ export class EmailService {
 					contentType: 'text/calendar'
 				}
 			]
+		});
+	}
+
+	async sendShiftCancelledEmail(data: ShiftCancelledEmailProps) {
+		await this.sendEmail({
+			from: FROM_EMAIL,
+			subject: `Arrangementet "${data.event.name}" er avlyst`,
+			to: [data.user.email],
+			react: <ShiftCancelledEmail event={data.event} user={data.user} />
 		});
 	}
 

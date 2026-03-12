@@ -1,37 +1,37 @@
 {
-  "name": "@programmerbar/email-templates",
-  "version": "0.0.1",
-  "private": true,
-  "exports": {
-    ".": "./templates/index.ts"
-  },
-  "scripts": {
-    "build": "email build --dir templates",
-    "dev": "email dev --dir templates",
-    "export": "email export --dir templates",
-    "lint": "eslint templates --ext .ts,.tsx",
-    "lint:fix": "eslint templates --ext .ts,.tsx --fix",
-    "format": "prettier --write templates/**/*.{ts,tsx}",
-    "format:check": "prettier --check templates/**/*.{ts,tsx}"
-  },
-  "dependencies": {
-    "@react-email/components": "1.0.6",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "react-email": "5.2.5",
-    "zod": "4.3.6"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.39.2",
-    "@react-email/preview-server": "5.2.5",
-    "@types/react": "19.2.9",
-    "@types/react-dom": "19.2.3",
-    "@typescript-eslint/eslint-plugin": "^8.53.1",
-    "@typescript-eslint/parser": "^8.53.1",
-    "eslint": "^9.39.2",
-    "eslint-plugin-react": "^7.37.2",
-    "globals": "^17.1.0",
-    "prettier": "^3.8.1",
-    "typescript": "5.9.3"
-  }
+	"name": "@programmerbar/email-templates",
+	"version": "0.0.1",
+	"private": true,
+	"exports": {
+		".": "./emails/index.ts"
+	},
+	"scripts": {
+		"build": "email build",
+		"dev": "email dev",
+		"export": "email export",
+		"lint": "eslint emails --ext .ts,.tsx",
+		"lint:fix": "eslint emails --ext .ts,.tsx --fix",
+		"format": "prettier --write emails/**/*.{ts,tsx}",
+		"format:check": "prettier --check emails/**/*.{ts,tsx}"
+	},
+	"dependencies": {
+		"@react-email/components": "1.0.9",
+		"react": "19.2.3",
+		"react-dom": "19.2.4",
+		"react-email": "5.2.9",
+		"zod": "4.3.6"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.39.2",
+		"@react-email/preview-server": "5.2.9",
+		"@types/react": "19.2.14",
+		"@types/react-dom": "19.2.3",
+		"@typescript-eslint/eslint-plugin": "^8.57.0",
+		"@typescript-eslint/parser": "^8.57.0",
+		"eslint": "^9.39.2",
+		"eslint-plugin-react": "^7.37.2",
+		"globals": "^17.4.0",
+		"prettier": "^3.8.1",
+		"typescript": "5.9.3"
+	}
 }

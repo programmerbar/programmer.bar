@@ -1,5 +1,6 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
+import type { EventService } from '$lib/server/services/event.service';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	const event = await locals.eventService.findFullEventById(params.id);
@@ -13,9 +14,54 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	};
 };
 
+// Nice code to get the type of a non-null event from `locals.eventService.findFullEventById`
+type FullEvent = Exclude<
+	Awaited<ReturnType<(typeof EventService)['prototype']['findFullEventById']>>,
+	undefined
+>;
+
+const getMembersFromShift = (event: FullEvent) => {
+	const members = new Map<string, { name: string; email: string }>();
+	for (const shift of event.shifts) {
+		for (const member of shift.members) {
+			if (!members.has(member.user.id)) {
+				members.set(member.user.id, {
+					name: member.user.name,
+					email: member.user.email
+				});
+			}
+		}
+	}
+	return members;
+};
+
 export const actions: Actions = {
-	delete: async ({ params, locals }) => {
+	delete: async ({ params, locals, platform }) => {
 		if (locals.user?.role === 'board') {
+			const event = await locals.eventService.findFullEventById(params.id);
+
+			if (event) {
+				const usersToNotify = getMembersFromShift(event);
+				const eventDate = event.date.toLocaleDateString('nb-NO', {
+					weekday: 'long',
+					year: 'numeric',
+					month: 'long',
+					day: 'numeric'
+				});
+
+				// Don't block on sending the emails
+				platform?.ctx.waitUntil(
+					Promise.all(
+						Array.from(usersToNotify.values()).map((user) =>
+							locals.emailService.sendShiftCancelledEmail({
+								event: { name: event.name, date: eventDate },
+								user
+							})
+						)
+					)
+				);
+			}
+
 			await locals.eventService.delete(params.id);
 			throw redirect(303, '/portal/arrangementer');
 		}

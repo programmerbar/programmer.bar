@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { command, getRequestEvent } from '$app/server';
 
 export const createEvent = command(CreateEventSchema, async (event) => {
-	const { locals } = getRequestEvent();
+	const { locals, platform } = getRequestEvent();
 
 	if (!locals.user) {
 		return {
@@ -46,7 +46,9 @@ export const createEvent = command(CreateEventSchema, async (event) => {
 	await locals.eventService.createUserShifts(mappedUserShifts);
 
 	const userIds = Array.from(new Set(mappedUserShifts.flatMap((shift) => shift.userId)));
-	await sendShiftEmails(locals, userIds, createdEvent.name, createdShifts, shifts);
+	platform?.ctx.waitUntil(
+		sendShiftEmails(locals, userIds, createdEvent.name, createdShifts, shifts)
+	);
 
 	if (userIds.length > 0) {
 		await locals.notificationService.sendNotifications(userIds, {

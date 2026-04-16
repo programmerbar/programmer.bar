@@ -239,11 +239,13 @@ export type AllSanitySchemaTypes =
 	| Geopoint
 	| Slug
 	| SanityAssetSourceData;
+
 export declare const internalGroqTypeReferenceTo: unique symbol;
-// Source: ./src/queries/products.ts
+
+// Source: src/queries/products.ts
 // Variable: GET_PRODUCTS_QUERY
 // Query: *[_type == "product" && !(_id in path("drafts.**"))] {    _id,    sku,    name,    description,    "productTypes": productType[]->{        _id,        title    },    isSoldOut,    priceList,    image,    "producer": producer->name,    volume,    alcoholContent,    variants,}
-export type GET_PRODUCTS_QUERYResult = Array<{
+export type GET_PRODUCTS_QUERY_RESULT = Array<{
 	_id: string;
 	sku: string | null;
 	name: string;
@@ -271,9 +273,11 @@ export type GET_PRODUCTS_QUERYResult = Array<{
 	alcoholContent: number | null;
 	variants: Array<string> | null;
 }>;
+
+// Source: src/queries/products.ts
 // Variable: GET_PRODUCT_BY_ID_QUERY
 // Query: *[_type == "product" && _id == $id && !(_id in path("drafts.**"))] {    _id,    sku,    name,    description,    "productTypes": productType[]->{        _id,        title    },    isSoldOut,    priceList,    image,    "producer": producer->name,    volume,    alcoholContent,    variants,}[0]
-export type GET_PRODUCT_BY_ID_QUERYResult = {
+export type GET_PRODUCT_BY_ID_QUERY_RESULT = {
 	_id: string;
 	sku: string | null;
 	name: string;
@@ -306,7 +310,7 @@ export type GET_PRODUCT_BY_ID_QUERYResult = {
 import "@sanity/client";
 declare module "@sanity/client" {
 	interface SanityQueries {
-		'*[_type == "product" && !(_id in path("drafts.**"))] {\n    _id,\n    sku,\n    name,\n    description,\n    "productTypes": productType[]->{\n        _id,\n        title\n    },\n    isSoldOut,\n    priceList,\n    image,\n    "producer": producer->name,\n    volume,\n    alcoholContent,\n    variants,\n}': GET_PRODUCTS_QUERYResult;
-		'*[_type == "product" && _id == $id && !(_id in path("drafts.**"))] {\n    _id,\n    sku,\n    name,\n    description,\n    "productTypes": productType[]->{\n        _id,\n        title\n    },\n    isSoldOut,\n    priceList,\n    image,\n    "producer": producer->name,\n    volume,\n    alcoholContent,\n    variants,\n}[0]': GET_PRODUCT_BY_ID_QUERYResult;
+		'*[_type == "product" && !(_id in path("drafts.**"))] {\n    _id,\n    sku,\n    name,\n    description,\n    "productTypes": productType[]->{\n        _id,\n        title\n    },\n    isSoldOut,\n    priceList,\n    image,\n    "producer": producer->name,\n    volume,\n    alcoholContent,\n    variants,\n}': GET_PRODUCTS_QUERY_RESULT;
+		'*[_type == "product" && _id == $id && !(_id in path("drafts.**"))] {\n    _id,\n    sku,\n    name,\n    description,\n    "productTypes": productType[]->{\n        _id,\n        title\n    },\n    isSoldOut,\n    priceList,\n    image,\n    "producer": producer->name,\n    volume,\n    alcoholContent,\n    variants,\n}[0]': GET_PRODUCT_BY_ID_QUERY_RESULT;
 	}
 }

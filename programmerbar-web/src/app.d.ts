@@ -5,9 +5,6 @@ declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
-			// Email client
-			resend: import('resend').Resend;
-
 			// DB client
 			db: import('$lib/server/db/drizzle').Database;
 

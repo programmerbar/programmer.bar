@@ -5,12 +5,13 @@ import {
 	ShiftCancelledEmail,
 	VoulenteerRequestEmail
 } from '@programmerbar/email-templates';
-import type { CreateEmailOptions, Resend } from 'resend';
 import { formatDate, normalDate } from '$lib/utils/date';
 import { render } from '@react-email/render';
 import { env } from '$env/dynamic/private';
 
 const FROM_EMAIL = 'ikkesvar@programmer.bar';
+
+type SendEmailPayload = Parameters<SendEmail['send']>[number];
 
 export type ContactUsEmailProps = {
 	name: string;
@@ -84,10 +85,10 @@ END:VCALENDAR`;
 }
 
 export class EmailService {
-	#resend: Resend;
+	#sendEmail: SendEmail;
 
-	constructor(resend: Resend) {
-		this.#resend = resend;
+	constructor(sendEmail: SendEmail) {
+		this.#sendEmail = sendEmail;
 	}
 
 	async sendContactUsSlackMessage(data: ContactUsEmailProps) {
@@ -159,7 +160,7 @@ export class EmailService {
 			from: FROM_EMAIL,
 			subject: 'Invitasjon til Programmerbar',
 			to: [data.email],
-			react: <InvitationEmail email={data.email} />
+			html: await render(<InvitationEmail email={data.email} />)
 		});
 	}
 
@@ -168,7 +169,7 @@ export class EmailService {
 			from: FROM_EMAIL,
 			subject: 'Ny frivillig-søknad',
 			to: ['frivilligansvarlig@programmerbar.no'],
-			react: <VoulenteerRequestEmail name={data.name} email={data.email} />
+			html: await render(<VoulenteerRequestEmail name={data.name} email={data.email} />)
 		});
 	}
 
@@ -179,12 +180,13 @@ export class EmailService {
 			from: FROM_EMAIL,
 			subject: 'Du har fått en vakt',
 			to: [data.user.email],
-			react: <NewShiftEmail shift={data.shift} user={data.user} />,
+			html: await render(<NewShiftEmail shift={data.shift} user={data.user} />),
 			attachments: [
 				{
 					filename: 'shift.ics',
 					content: icsContent,
-					contentType: 'text/calendar'
+					disposition: 'attachment',
+					type: 'text/calendar'
 				}
 			]
 		});
@@ -195,15 +197,15 @@ export class EmailService {
 			from: FROM_EMAIL,
 			subject: `Arrangementet "${data.event.name}" er avlyst`,
 			to: [data.user.email],
-			react: <ShiftCancelledEmail event={data.event} user={data.user} />
+			html: await render(<ShiftCancelledEmail event={data.event} user={data.user} />)
 		});
 	}
 
-	private async sendEmail(payload: CreateEmailOptions) {
+	private async sendEmail(payload: SendEmailPayload) {
 		console.log(`[EmailService] ###### SENDING EMAIL ########`);
 		console.log(`[EmailService] To: ${payload.to}`);
 		console.log(`[EmailService] Subject: ${payload.subject}`);
-		console.log(await render(payload.react));
+		console.log(payload.html);
 		console.log(`[EmailService] #############################`);
 
 		if (payload.attachments) {
@@ -216,7 +218,7 @@ export class EmailService {
 			return;
 		}
 
-		await this.#resend.emails.send(payload);
-		console.log(`[EmailService] ✅ Email sent via Resend`);
+		await this.#sendEmail.send(payload);
+		console.log(`[EmailService] ✅ Email sent via Cloudflare`);
 	}
 }

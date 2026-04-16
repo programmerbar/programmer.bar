@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { GET_PRODUCTS_QUERYResult } from '@programmerbar/cms/types';
+	import type { GET_PRODUCTS_QUERY_RESULT } from '@programmerbar/cms/types';
 	import { resolve } from '$app/paths';
 	import { urlFor } from '$lib/api/sanity/queries';
 	import CLIWindow from '$lib/components/app/CLIWindow.svelte';
 
 	type Props = {
-		products: GET_PRODUCTS_QUERYResult;
+		products: GET_PRODUCTS_QUERY_RESULT;
 	};
 
 	let { products }: Props = $props();

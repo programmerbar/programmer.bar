@@ -82,7 +82,6 @@
 		"nanoid": "5.1.9",
 		"react": "19.2.5",
 		"react-dom": "19.2.5",
-		"resend": "6.12.0",
 		"svelte-sonner": "1.1.0",
 		"svelte-turnstile": "^0.11.0",
 		"tailwind-merge": "3.5.0",

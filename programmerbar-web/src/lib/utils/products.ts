@@ -1,7 +1,7 @@
-import type { GET_PRODUCTS_QUERYResult } from '@programmerbar/cms/types';
 import type { FilterState } from '$lib/states/filter-state.svelte';
+import type { GET_PRODUCTS_QUERY_RESULT } from '@programmerbar/cms/types';
 
-export const extractBreweries = (products: GET_PRODUCTS_QUERYResult) => {
+export const extractBreweries = (products: GET_PRODUCTS_QUERY_RESULT) => {
 	const producers = products
 		.map((product) => product.producer)
 		.filter(Boolean)
@@ -25,7 +25,7 @@ export const extractBreweries = (products: GET_PRODUCTS_QUERYResult) => {
 };
 
 export const extractPriceRange = (
-	products: GET_PRODUCTS_QUERYResult,
+	products: GET_PRODUCTS_QUERY_RESULT,
 	useStudentPrice: boolean = true
 ) => {
 	if (products.length === 0) {
@@ -46,7 +46,7 @@ export const extractPriceRange = (
 	};
 };
 
-export const extractTypes = (products: GET_PRODUCTS_QUERYResult) => {
+export const extractTypes = (products: GET_PRODUCTS_QUERY_RESULT) => {
 	return products
 		.flatMap((product) => product.productTypes)
 		.filter(Boolean)
@@ -58,11 +58,11 @@ export const extractTypes = (products: GET_PRODUCTS_QUERYResult) => {
 				}
 				return acc;
 			},
-			[] as Array<Exclude<GET_PRODUCTS_QUERYResult[number]['productTypes'], null>[number]>
+			[] as Array<Exclude<GET_PRODUCTS_QUERY_RESULT[number]['productTypes'], null>[number]>
 		);
 };
 
-export const filterProducts = (products: GET_PRODUCTS_QUERYResult, filter: FilterState) => {
+export const filterProducts = (products: GET_PRODUCTS_QUERY_RESULT, filter: FilterState) => {
 	const filteredProducts = products.filter((product) => {
 		if (filter.current.hideSoldOut && product.isSoldOut) {
 			return false;

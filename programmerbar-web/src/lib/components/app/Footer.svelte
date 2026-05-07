@@ -1,5 +1,5 @@
 <script lang="ts">
-	import lervigLogo from '$lib/assets/lervig-logo-black.png';
+	import sjufjellLogo from '$lib/assets/7fjell-logo.svg';
 	import { getUser } from '$lib/states/user.svelte';
 	import { resolve } from '$app/paths';
 	import { PUBLIC_GITHUB_SHA } from '$env/static/public';
@@ -32,11 +32,11 @@
 			<div class="space-y-4 text-center">
 				<h3 class="font-semibold tracking-wider uppercase opacity-70">Hovedsamarbeidspartner</h3>
 				<a
-					href="https://lervig.no"
+					href="https://www.7fjellbryggeri.com/"
 					class="inline-block transition-opacity hover:opacity-80"
-					aria-label="Lervig"
+					aria-label="7 Fjell"
 				>
-					<img src={lervigLogo} alt="Lervig" class="mx-auto h-20 w-auto dark:invert" />
+					<img src={sjufjellLogo} alt="7 Fjell" class="mx-auto h-20 w-auto invert dark:invert-0" />
 				</a>
 			</div>
 

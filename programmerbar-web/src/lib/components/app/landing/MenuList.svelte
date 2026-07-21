@@ -18,6 +18,8 @@
 	let currentPage = $state(0);
 	let start = $derived(currentPage * MAX);
 	let end = $derived(start + MAX);
+	const visibleProducts = $derived(products.slice(start, end));
+	const placeholders = $derived(Math.max(0, MAX - visibleProducts.length));
 
 	let delay = $state(INTERVAL);
 
@@ -41,12 +43,12 @@
 	<!-- Window Content -->
 	<div class="flex flex-1 flex-col p-6 md:p-8" aria-hidden="true">
 		<ul class="flex flex-1 flex-col gap-4 overflow-hidden">
-			{#each products.slice(start, end) as product (product._id)}
+			{#each visibleProducts as product (product._id)}
 				{@const { _id, name, producer, priceList, image } = product}
 				<li class="group">
 					<a href={resolve('/(app)/produkt/[id]', { id: _id })} class="block">
 						<div
-							class="border-primary bg-card-muted hover:border-primary-dark hover:bg-card-hover relative border-l-4 p-4 font-mono transition-all duration-300"
+							class="border-primary bg-card-muted hover:border-primary-dark hover:bg-card-hover relative min-h-24 border-l-4 p-4 font-mono transition-all duration-300"
 						>
 							<div class="flex items-center gap-4">
 								{#if image}
@@ -102,6 +104,9 @@
 						</div>
 					</a>
 				</li>
+			{/each}
+			{#each Array.from({ length: placeholders }, (_, i) => i) as i (i)}
+				<li class="invisible min-h-24" aria-hidden="true"></li>
 			{/each}
 			{#if TOTAL_PAGES > 1}
 				<div class="border-border mt-auto flex h-6 items-center gap-1">

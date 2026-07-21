@@ -44,5 +44,10 @@
 			"bucket_name": "progbar-bucket",
 			"binding": "BUCKET"
 		}
+	],
+	"send_email": [
+		{
+			"name": "EMAIL"
+		}
 	]
 }

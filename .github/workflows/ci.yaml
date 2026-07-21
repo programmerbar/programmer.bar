@@ -19,6 +19,8 @@ env:
   PUBLIC_VAPID_PUBLIC_KEY: ${{ secrets.PUBLIC_VAPID_PUBLIC_KEY }}
   VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
   VAPID_SUBJECT: "mailto:web@programmerbar.no"
+  PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
+  CLOUDFLARE_TURNSTILE_SITE_SECRET: 1x0000000000000000000000000000000AA
 
 jobs:
   ci:
@@ -27,15 +29,15 @@ jobs:
 
     steps:
       - name: 🔍 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
 
       - name: 🐢 Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
           cache-dependency-path: ./pnpm-lock.yaml
 

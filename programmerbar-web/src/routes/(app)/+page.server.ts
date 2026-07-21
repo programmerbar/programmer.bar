@@ -4,12 +4,12 @@ import { flattenRepeatingEvents } from '$lib/utils/events';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const [products, sanityEvents, dbEvents, status, repeatingEvents] = await Promise.all([
+	const [products, sanityEvents, dbEvents, repeatingEvents, status] = await Promise.all([
 		getProducts(),
 		getSanityEvents(),
 		locals.eventService.getUpcomingPublicEvents(),
-		locals.statusService.getWithMessage(),
-		getRepeatingEvents()
+		getRepeatingEvents(),
+		locals.statusService.getWithMessage()
 	]);
 
 	const p = products.filter((product) => !product.isSoldOut);

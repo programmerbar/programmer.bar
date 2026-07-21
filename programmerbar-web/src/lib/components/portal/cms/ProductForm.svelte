@@ -171,7 +171,7 @@
 								name="name"
 								bind:value={formData.name}
 								required
-								placeholder="F.eks. Lervig Lucky Jack IPA"
+								placeholder="F.eks. 7 Fjell Ginger Ninja"
 								class="w-full"
 							/>
 						</div>

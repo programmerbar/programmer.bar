@@ -1,6 +1,6 @@
 import type { Database } from '$lib/server/db/drizzle';
 import { events, shifts, userShifts } from '$lib/server/db/schemas';
-import { eq, and, lte, gte, inArray } from 'drizzle-orm';
+import { eq, and, lte, gte, inArray, asc } from 'drizzle-orm';
 
 export class ShiftService {
 	#db: Database;
@@ -25,7 +25,7 @@ export class ShiftService {
 		return completedShifts.map((shifts) => shifts.shift);
 	}
 
-	async findUsersWithCompletedShiftsByUserIds(userIds: string[]) {
+	async findUsersWithCompletedShiftsByUserIds(userIds: Array<string>) {
 		if (userIds.length === 0) {
 			return [];
 		}
@@ -58,7 +58,8 @@ export class ShiftService {
 					// eq(userShifts.status, 'accepted'), // Uncomment this line when we can accept shifts
 					gte(shifts.startAt, new Date())
 				)
-			);
+			)
+			.orderBy(asc(shifts.startAt));
 
 		return upcomingShifts;
 	}

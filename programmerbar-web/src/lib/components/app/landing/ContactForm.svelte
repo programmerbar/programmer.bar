@@ -2,6 +2,14 @@
 	import { toast } from 'svelte-sonner';
 	import { createContactSubmissionAction } from '../../../../routes/(app)/common.remote';
 	import CLIWindow from '$lib/components/app/CLIWindow.svelte';
+	import { Turnstile } from 'svelte-turnstile';
+	import { PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY } from '$env/static/public';
+	import { getThemeContext } from '$lib/states/theme.svelte';
+
+	let turnstileToken = $state('');
+
+	let themeContext = getThemeContext();
+	let theme: 'light' | 'dark' = $derived(themeContext.isDark ? 'dark' : 'light');
 </script>
 
 <CLIWindow title="nano kontakt.txt" class="h-full">
@@ -53,9 +61,21 @@
 				></textarea>
 			</label>
 
+			<Turnstile
+				siteKey={PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY}
+				responseFieldName="cfTurnstileResponse"
+				{...createContactSubmissionAction.fields.cfTurnstileResponse.as('text')}
+				class="cf-turnstile my-2"
+				on:callback={(e) => {
+					turnstileToken = e.detail.token;
+				}}
+				{theme}
+			/>
+
 			<button
 				type="submit"
-				class="border-border bg-card-muted hover:bg-card-hover hover:border-primary focus:border-primary text-foreground-primary w-full border-2 px-4 py-2 text-center font-mono text-sm font-semibold transition-all focus:ring-0 focus:outline-none"
+				class="border-border bg-card-muted hover:bg-card-hover hover:border-primary focus:border-primary text-foreground-primary w-full border-2 px-4 py-2 text-center font-mono text-sm font-semibold transition-all focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+				disabled={!turnstileToken}
 			>
 				Send inn
 			</button>

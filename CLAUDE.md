@@ -17,6 +17,7 @@ This is a **Turborepo** monorepo with three workspaces:
 ## Common Commands
 
 ### Development
+
 ```bash
 pnpm install              # Install all dependencies
 pnpm dev                  # Start all workspaces in dev mode
@@ -25,6 +26,7 @@ pnpm dev                  # Start all workspaces in dev mode
 ```
 
 ### Building & Deployment
+
 ```bash
 pnpm build               # Build all workspaces
 pnpm preview             # Build and preview with Wrangler
@@ -32,6 +34,7 @@ cd programmerbar-web && pnpm deploy  # Deploy to Cloudflare Workers
 ```
 
 ### Code Quality
+
 ```bash
 pnpm lint                # Lint all workspaces
 pnpm lint:fix            # Fix linting issues
@@ -41,6 +44,7 @@ pnpm format:check        # Check formatting without writing
 ```
 
 ### Database (Drizzle + Cloudflare D1)
+
 ```bash
 pnpm db:generate         # Generate migration files from schema changes
 pnpm db:migrate:local    # Apply migrations to local D1 database
@@ -50,6 +54,7 @@ pnpm db:migrate          # Apply migrations to production D1 database
 **Important**: When you modify database schemas in `src/lib/db/schemas/`, always run `pnpm db:generate` to create migration files before applying them.
 
 ### Testing
+
 ```bash
 # In programmerbar-web/
 pnpm test:unit           # Run Vitest unit tests
@@ -57,6 +62,7 @@ pnpm test:integration    # Run Playwright e2e tests
 ```
 
 ### Utilities
+
 ```bash
 # In programmerbar-web/
 pnpm dlx tsx ./scripts/add-invitation.ts "<email>"  # Create user invitation
@@ -67,6 +73,7 @@ pnpm client:generate                                  # Generate API client
 ```
 
 ### CMS
+
 ```bash
 # In programmerbar-cms/
 pnpm extract             # Extract Sanity schema
@@ -79,24 +86,28 @@ pnpm deploy              # Deploy Sanity Studio
 ### Tech Stack
 
 **Frontend & Backend** (Same SvelteKit app):
+
 - SvelteKit 2.46 with Vite 7
 - Cloudflare Workers (via @sveltejs/adapter-cloudflare)
 - Tailwind CSS 4.1 + Bits UI component library
 - Svelte 5 (Runes syntax)
 
 **Data Layer**:
+
 - Cloudflare D1 (serverless SQLite)
 - Drizzle ORM 0.44 with relational queries
 - Database migrations via drizzle-kit
 - Snake_case conversion enabled in Drizzle config
 
 **Authentication**:
+
 - Lucia 3.2 (session-based auth)
 - Feide OAuth2 provider (Norwegian federated identity service)
 - Cookie-based sessions stored in D1
 - Session validation in `hooks.server.ts`
 
 **Content Management**:
+
 - **Two separate Sanity instances**:
   - Main Sanity: products, producers, product types
   - Echo Sanity: events/happenings (external event system integration)
@@ -104,11 +115,13 @@ pnpm deploy              # Deploy Sanity Studio
 - Image handling via @sanity/image-url
 
 **Email**:
-- Resend 6.1 (transactional email service)
+
+- Cloudflare Email (transactional email service)
 - React Email for templates (in shared workspace)
 - Shift emails include .ics calendar attachments
 
 **Infrastructure** (Cloudflare):
+
 - Workers: Serverless runtime
 - D1: SQLite database
 - R2: Object storage (product images)
@@ -119,13 +132,12 @@ pnpm deploy              # Deploy Sanity Studio
 The application uses **dependency injection** via `hooks.server.ts`. Every request handler receives initialized services in `event.locals`:
 
 ```typescript
-event.locals.db              // Drizzle ORM instance
-event.locals.auth            // Lucia auth instance
-event.locals.emailService    // Resend email sender
-event.locals.eventService    // Event CRUD operations
-event.locals.userService     // User CRUD operations
-event.locals.shiftService    // Shift management
-event.locals.productService  // Product management
+event.locals.db; // Drizzle ORM instance
+event.locals.auth; // Lucia auth instance
+event.locals.eventService; // Event CRUD operations
+event.locals.userService; // User CRUD operations
+event.locals.shiftService; // Shift management
+event.locals.productService; // Product management
 // ... and more
 ```
 
@@ -154,6 +166,7 @@ Key tables (all in `src/lib/db/schemas/`):
 - `invitation` - User invitations
 
 **Schema changes workflow**:
+
 1. Edit schema files in `src/lib/db/schemas/`
 2. Run `pnpm db:generate` to create migration
 3. Run `pnpm db:migrate:local` to apply locally
@@ -163,6 +176,7 @@ Key tables (all in `src/lib/db/schemas/`):
 ### Route Structure
 
 **Public Routes** `src/routes/(app)/`:
+
 - `/` - Homepage
 - `/meny` - Beer/product menu
 - `/arrangement` - Event listings (from Sanity)
@@ -172,6 +186,7 @@ Key tables (all in `src/lib/db/schemas/`):
 - `/kontakt-oss` - Contact form
 
 **Protected Routes** `src/routes/(portal)/portal/`:
+
 - `/portal` - User dashboard (requires auth)
 - `/portal/profil` - User profile & settings
 - `/portal/admin/*` - Board-only admin panel (requires `user.role === 'board'`)
@@ -181,6 +196,7 @@ Key tables (all in `src/lib/db/schemas/`):
   - `/portal/admin/cms` - Product/producer/type management
 
 **API Routes** `src/routes/(app)/`:
+
 - `/slack-command` - Slack integration webhook
 - `/booking` - Event booking endpoint
 
@@ -196,12 +212,14 @@ Route protection is implemented in `src/hooks.server.ts` with HTTP 307 redirects
 6. Session cookie set → user redirected to `/portal`
 
 On every request:
+
 - `hooks.server.ts` extracts session cookie
 - Validates with Lucia (queries D1 `session` table)
 - Populates `event.locals.user` and `event.locals.session`
 - Protects routes based on auth status and role
 
 **Files**:
+
 - `src/hooks.server.ts` - Request lifecycle & DI
 - `src/lib/auth/lucia.ts` - Lucia auth factory
 - `src/lib/auth/feide.ts` - Feide OAuth2 provider
@@ -222,18 +240,20 @@ On every request:
    - Separate project ID and dataset
 
 **Usage**:
+
 ```typescript
 // Fetch products from main Sanity
-const products = await sanityClient.fetch(groq`*[_type == "product"]`)
+const products = await sanityClient.fetch(groq`*[_type == "product"]`);
 
 // Fetch events from Echo Sanity
-const events = await echoSanityClient.fetch(groq`*[_type == "happening"]`)
+const events = await echoSanityClient.fetch(groq`*[_type == "happening"]`);
 
 // Generate image URLs
-const imageUrl = imageUrlBuilder.image(product.image).width(400).url()
+const imageUrl = imageUrlBuilder.image(product.image).width(400).url();
 ```
 
 **Files**:
+
 - `src/lib/api/sanity/client.ts` - Client setup
 - `src/lib/api/sanity/events.ts` - Event fetching
 - `src/lib/api/sanity/products.ts` - Product fetching
@@ -249,6 +269,7 @@ Email templates are **React components** in the `@programmerbar/email-templates`
 - `VolunteerRequestEmail.tsx` - Volunteer applications
 
 **Sending emails**:
+
 ```typescript
 const html = render(<InvitationEmail email={email} />)
 await event.locals.emailService.sendEmail({
@@ -266,11 +287,10 @@ await event.locals.emailService.sendEmail({
 Access Cloudflare resources via `event.platform?.env`:
 
 ```typescript
-event.platform.env.DB              // D1 database
-event.platform.env.BUCKET          // R2 bucket (images)
-event.platform.env.STATUS_KV       // KV namespace (caching)
-event.platform.env.RESEND_API_KEY  // Email API key
-event.platform.env.FEIDE_CLIENT_ID // OAuth credentials
+event.platform.env.DB; // D1 database
+event.platform.env.BUCKET; // R2 bucket (images)
+event.platform.env.STATUS_KV; // KV namespace (caching)
+event.platform.env.FEIDE_CLIENT_ID; // OAuth credentials
 ```
 
 **Configuration**: `programmerbar-web/wrangler.jsonc`
@@ -297,7 +317,7 @@ Use **Zod** schemas for all form validation:
 ```typescript
 const schema = z.object({
   email: z.string().email(),
-  name: z.string().min(1)
+  name: z.string().min(1),
 });
 
 // In +page.server.ts actions:
@@ -311,8 +331,8 @@ const result = schema.safeParse(formData);
 **Production**: Set via Wrangler secrets or environment variables in Cloudflare dashboard
 
 Required variables:
+
 - `FEIDE_CLIENT_ID`, `FEIDE_CLIENT_SECRET` - OAuth credentials
-- `RESEND_API_KEY` - Email sending
 - `PUBLIC_SANITY_PROJECT_ID`, `PUBLIC_SANITY_DATASET` - Main Sanity
 - `PUBLIC_ECHO_SANITY_PROJECT_ID`, `PUBLIC_ECHO_SANITY_DATASET` - Echo Sanity
 
@@ -330,16 +350,19 @@ Required variables:
 ### Adding a New Route
 
 **Public route**:
+
 1. Create `src/routes/(app)/your-path/+page.svelte`
 2. Add server logic in `+page.server.ts` if needed
 3. No auth required by default
 
 **Protected route**:
+
 1. Create `src/routes/(portal)/portal/your-path/+page.svelte`
 2. Add server logic in `+page.server.ts`
 3. Access user via `const { user } = await parent()`
 
 **Admin-only route**:
+
 1. Create `src/routes/(portal)/portal/admin/your-path/+page.svelte`
 2. Check `user.role === 'board'` in `+page.server.ts` or component
 3. Redirect if unauthorized
@@ -365,24 +388,25 @@ pnpm test:integration -- tests/your-test.spec.ts
 
 ## Key Files Reference
 
-| Purpose | File Path |
-|---------|-----------|
-| Request lifecycle & DI | `src/hooks.server.ts` |
-| Database factory | `src/lib/db/drizzle.ts` |
-| Database schemas | `src/lib/db/schemas/` |
-| Services | `src/lib/services/` |
-| Lucia auth setup | `src/lib/auth/lucia.ts` |
-| Feide OAuth | `src/lib/auth/feide.ts` |
-| Sanity integration | `src/lib/api/sanity/` |
-| Email templates | `../programmerbar-email-templates/templates/` |
-| Cloudflare config | `wrangler.jsonc` |
-| Drizzle config | `drizzle.config.ts` |
+| Purpose                | File Path                                     |
+| ---------------------- | --------------------------------------------- |
+| Request lifecycle & DI | `src/hooks.server.ts`                         |
+| Database factory       | `src/lib/db/drizzle.ts`                       |
+| Database schemas       | `src/lib/db/schemas/`                         |
+| Services               | `src/lib/services/`                           |
+| Lucia auth setup       | `src/lib/auth/lucia.ts`                       |
+| Feide OAuth            | `src/lib/auth/feide.ts`                       |
+| Sanity integration     | `src/lib/api/sanity/`                         |
+| Email templates        | `../programmerbar-email-templates/templates/` |
+| Cloudflare config      | `wrangler.jsonc`                              |
+| Drizzle config         | `drizzle.config.ts`                           |
 
 ## Domain-Specific Notes
 
 ### Product Pricing System
 
 Products have **three price tiers**:
+
 - `ordinaryPrice` - Regular customers
 - `studentPrice` - Discounted for students
 - `internalPrice` - Cost for board members
@@ -395,15 +419,17 @@ Products also have a `credits` field (1-5 rating).
 - `board` - Board member (admin access)
 
 Check role in routes:
+
 ```typescript
-if (user.role !== 'board') {
-  redirect(307, '/portal');
+if (user.role !== "board") {
+  redirect(307, "/portal");
 }
 ```
 
 ### Training Status
 
 Users have training-related fields:
+
 - `trainingCompleted` - Boolean
 - `trainingCompletedDate` - Timestamp
 

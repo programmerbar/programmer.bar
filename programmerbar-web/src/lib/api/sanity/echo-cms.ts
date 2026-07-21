@@ -1,5 +1,5 @@
 import groq from 'groq';
-import imageUrlBuilder, { type SanityImageSource } from '@sanity/image-url';
+import { type SanityImageSource, createImageUrlBuilder } from '@sanity/image-url';
 import { createClient } from '@sanity/client';
 
 export const ECHO_SANITY_PROJECT_ID = 'pgq2pd26';
@@ -203,7 +203,7 @@ export type StudentGroup = {
 
 type Image = SanityImageSource;
 
-const echoBuilder = imageUrlBuilder(echoSanityClient);
+const echoBuilder = createImageUrlBuilder(echoSanityClient);
 
 export const echoUrlFor = (source: Image) => {
 	return echoBuilder.image(source);

@@ -18,10 +18,10 @@ import { PushSubscriptionService } from '$lib/server/services/push-subscription.
 import { PushNotificationService } from '$lib/server/services/push-notification.service';
 import type { Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
-import { Resend } from 'resend';
 import { ImageService } from '$lib/server/services/image.service';
 import { ReferralService } from '$lib/server/services/referral.service';
 import { PendingApplicationService } from '$lib/server/services/pending-application.service';
+import { RateLimitService } from '$lib/server/services/rate-limit.service';
 import { csrf } from '$lib/server/csrf';
 import { handleErrorWithSentry, initCloudflareSentryHandle, sentryHandle } from '@sentry/sveltekit';
 
@@ -45,9 +45,7 @@ const setup: Handle = async ({ event, resolve }) => {
 		});
 	}
 
-	// Setup Resend
-	const resend = new Resend(event.platform?.env.RESEND_API_KEY);
-	event.locals.resend = resend;
+	const sendEmail = event.platform!.env.EMAIL;
 
 	// Setup database
 	const db = createDatabase(DB);
@@ -67,7 +65,8 @@ const setup: Handle = async ({ event, resolve }) => {
 
 	// Setup services
 	event.locals.statusService = new StatusService(STATUS_KV);
-	event.locals.emailService = new EmailService(resend);
+	event.locals.rateLimitService = new RateLimitService(STATUS_KV);
+	event.locals.emailService = new EmailService(sendEmail);
 	event.locals.invitationService = new InvitationService(db);
 	event.locals.userService = new UserService(db);
 	event.locals.eventService = new EventService(db);

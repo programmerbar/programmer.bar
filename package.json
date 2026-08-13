@@ -1,6 +1,6 @@
 {
   "name": "@programmerbar/mono",
-  "packageManager": "pnpm@10.18.1+sha512.77a884a165cbba2d8d1c19e3b4880eee6d2fcabd0d879121e282196b80042351d5eb3ca0935fa599da1dc51265cc68816ad2bddd2a2de5ea9fdf92adbec7cd34",
+  "packageManager": "pnpm@11.21.0+sha512.521705bce689924eac72f5a3587122f362689ef6571e55ba80076fd637c11132ecffada26fad4ea79c485bfddbfd3d5a2a5b05805a77e893de71ec8a6cca3bb1",
   "scripts": {
     "dev": "turbo run dev",
     "preview": "turbo run preview",
@@ -23,4 +23,3 @@
     "typescript": "5.9.3"
   }
 }
-

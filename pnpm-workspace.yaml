@@ -3,12 +3,16 @@ packages:
   - programmerbar-email-templates
   - programmerbar-web
 
-onlyBuiltDependencies:
-  - '@nestjs/core'
-  - '@openapitools/openapi-generator-cli'
-  - '@swc/core'
-  - '@tailwindcss/oxide'
-  - esbuild
-  - protobufjs
-  - sharp
-  - workerd
+# Only install packages that has been out for 7 days. This is to prevent
+# install potentially harmful pacakges. There have been numerous cases
+# where this has happened with npm.
+minimumReleaseAge: 10080
+
+# Only allow these packages to run post-build scripts. Having unknown/sketchy
+# packages run custom scripts is a security vulnerability and should be
+# avoided.
+allowBuilds:
+  "@sentry/cli": true
+  esbuild: true
+  sharp: true
+  workerd: true

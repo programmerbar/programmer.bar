@@ -51,25 +51,28 @@ pnpm db:migrate:local    # Apply migrations to local D1 database
 pnpm db:migrate          # Apply migrations to production D1 database
 ```
 
-**Important**: When you modify database schemas in `src/lib/db/schemas/`, always run `pnpm db:generate` to create migration files before applying them.
+**Important**: When you modify database schemas in `src/lib/server/db/schemas/`, always run `pnpm db:generate` to create migration files before applying them. The production D1 database is named `progbar-db` (see `db:migrate` in `programmerbar-web/package.json`).
 
 ### Testing
 
 ```bash
 # In programmerbar-web/
 pnpm test:unit           # Run Vitest unit tests
-pnpm test:integration    # Run Playwright e2e tests
+pnpm test:e2e            # Run Playwright e2e tests
+pnpm test:e2e:ui         # Run Playwright with the UI runner
 ```
 
 ### Utilities
 
 ```bash
-# In programmerbar-web/
-pnpm dlx tsx ./scripts/add-invitation.ts "<email>"  # Create user invitation
-pnpm dlx tsx ./scripts/seed.ts                       # Seed local database
-pnpm dlx tsx ./scripts/reset.ts                      # Reset local database
-pnpm typegen                                          # Generate Wrangler types
-pnpm client:generate                                  # Generate API client
+# From repo root
+pnpm add-invitation "<email>"   # Create user invitation (wraps src/scripts/add-invitation.ts)
+
+# In programmerbar-web/ (scripts live in src/scripts/)
+pnpm dlx tsx ./src/scripts/seed.ts       # Seed local database
+pnpm dlx tsx ./src/scripts/reset.ts      # Reset local database
+pnpm dlx tsx ./src/scripts/setup.ts      # Set up local database
+pnpm typegen                             # Generate Wrangler types (-> src/worker-configuration.d.ts)
 ```
 
 ### CMS
@@ -87,15 +90,16 @@ pnpm deploy              # Deploy Sanity Studio
 
 **Frontend & Backend** (Same SvelteKit app):
 
-- SvelteKit 2.46 with Vite 7
+- SvelteKit 2.57 with Vite 8
 - Cloudflare Workers (via @sveltejs/adapter-cloudflare)
-- Tailwind CSS 4.1 + Bits UI component library
-- Svelte 5 (Runes syntax)
+- Tailwind CSS 4.2 + Bits UI component library
+- Svelte 5.55 (Runes syntax)
+- Zod 4 for validation (`src/lib/validators.ts`), Sentry for error tracking, Turnstile for bot protection
 
 **Data Layer**:
 
 - Cloudflare D1 (serverless SQLite)
-- Drizzle ORM 0.44 with relational queries
+- Drizzle ORM 0.45 with relational queries
 - Database migrations via drizzle-kit
 - Snake_case conversion enabled in Drizzle config
 
@@ -141,13 +145,13 @@ event.locals.productService; // Product management
 // ... and more
 ```
 
-Services are **class-based** (e.g., `UserService`, `EventService`) with private `#db` field and public methods. Each service focuses on one domain.
+Services are **class-based** (e.g., `UserService`, `EventService`) with private `#db` field and public methods. Each service focuses on one domain. DB-backed services take the Drizzle `Database`; some take Cloudflare bindings instead (e.g. `BanService`/`StatusService`/`RateLimitService` take `STATUS_KV`, `ImageService` takes `R2_BUCKET`, `EmailService` takes a `sendEmail` function).
 
-**Location**: `src/lib/services/`
+**Location**: `src/lib/server/services/` (everything under `src/lib/server/` is server-only and never bundled to the client)
 
 ### Database Schema
 
-Key tables (all in `src/lib/db/schemas/`):
+Key tables (all in `src/lib/server/db/schemas/`):
 
 - `user` - Members with Feide ID, role (board/normal), training status
 - `session` - Lucia session storage
@@ -167,7 +171,7 @@ Key tables (all in `src/lib/db/schemas/`):
 
 **Schema changes workflow**:
 
-1. Edit schema files in `src/lib/db/schemas/`
+1. Edit schema files in `src/lib/server/db/schemas/`
 2. Run `pnpm db:generate` to create migration
 3. Run `pnpm db:migrate:local` to apply locally
 4. Test changes
@@ -182,8 +186,8 @@ Key tables (all in `src/lib/db/schemas/`):
 - `/arrangement` - Event listings (from Sanity)
 - `/arrangement/[slug]` - Event details
 - `/logg-inn` - Login (Feide OAuth redirect)
-- `/bli-frivollig` - Volunteer signup form
-- `/kontakt-oss` - Contact form
+- `/bli-frivillig` - Volunteer signup form
+- `/meny`, `/produkt`, `/om-oss`, `/emeritus`, `/beer-pong` - Misc public pages
 
 **Protected Routes** `src/routes/(portal)/portal/`:
 
@@ -221,10 +225,12 @@ On every request:
 **Files**:
 
 - `src/hooks.server.ts` - Request lifecycle & DI
-- `src/lib/auth/lucia.ts` - Lucia auth factory
-- `src/lib/auth/feide.ts` - Feide OAuth2 provider
-- `src/routes/(app)/logg-inn/+server.ts` - Login endpoint
-- `src/routes/(app)/logg-inn/callback/+server.ts` - OAuth callback
+- `src/lib/server/auth/lucia.ts` - Lucia auth factory
+- `src/lib/server/auth/feide.ts` - Feide OAuth2 provider
+- `src/routes/(app)/logg-inn/` - Login landing page
+- `src/routes/(portal)/auth/feide/+server.ts` - Feide OAuth redirect endpoint
+- `src/routes/(portal)/auth/feide/callback/+server.ts` - OAuth callback
+- `src/routes/(portal)/auth/logg-ut/` - Logout
 
 ### Sanity CMS Integration
 
@@ -254,10 +260,10 @@ const imageUrl = imageUrlBuilder.image(product.image).width(400).url();
 
 **Files**:
 
-- `src/lib/api/sanity/client.ts` - Client setup
-- `src/lib/api/sanity/events.ts` - Event fetching
-- `src/lib/api/sanity/products.ts` - Product fetching
-- `src/lib/api/sanity/image.ts` - Image URL generation
+- `src/lib/api/sanity/client.ts` - Client setup + image URL builder
+- `src/lib/api/sanity/echo-cms.ts` - Echo Sanity client (events/happenings)
+- `src/lib/api/sanity/queries.ts` - GROQ queries
+- `src/lib/api/remotes/` - SvelteKit remote functions for data fetching
 
 ### Email System
 
@@ -280,7 +286,7 @@ await event.locals.emailService.sendEmail({
 })
 ```
 
-**File**: `src/lib/services/email.service.tsx`
+**File**: `src/lib/server/services/email.service.tsx`
 
 ### Cloudflare Bindings
 
@@ -340,11 +346,11 @@ Required variables:
 
 ### Adding a New Database Table
 
-1. Create schema file in `src/lib/db/schemas/your-table.ts`
-2. Export from `src/lib/db/schemas/index.ts`
+1. Create schema file in `src/lib/server/db/schemas/your-table.ts`
+2. Export from `src/lib/server/db/schemas/index.ts`
 3. Run `pnpm db:generate` to create migration
 4. Run `pnpm db:migrate:local` to apply locally
-5. Create corresponding service in `src/lib/services/your-domain.service.ts`
+5. Create corresponding service in `src/lib/server/services/your-domain.service.ts`
 6. Initialize service in `src/hooks.server.ts`
 
 ### Adding a New Route
@@ -383,7 +389,7 @@ Preview and iterate on email templates in the browser.
 pnpm test:unit -- path/to/test.test.ts
 
 # E2E test (Playwright)
-pnpm test:integration -- tests/your-test.spec.ts
+pnpm test:e2e -- tests/your-test.spec.ts
 ```
 
 ## Key Files Reference
@@ -391,11 +397,12 @@ pnpm test:integration -- tests/your-test.spec.ts
 | Purpose                | File Path                                     |
 | ---------------------- | --------------------------------------------- |
 | Request lifecycle & DI | `src/hooks.server.ts`                         |
-| Database factory       | `src/lib/db/drizzle.ts`                       |
-| Database schemas       | `src/lib/db/schemas/`                         |
-| Services               | `src/lib/services/`                           |
-| Lucia auth setup       | `src/lib/auth/lucia.ts`                       |
-| Feide OAuth            | `src/lib/auth/feide.ts`                       |
+| Database factory       | `src/lib/server/db/drizzle.ts`                |
+| Database schemas       | `src/lib/server/db/schemas/`                  |
+| Services               | `src/lib/server/services/`                    |
+| Lucia auth setup       | `src/lib/server/auth/lucia.ts`                |
+| Feide OAuth            | `src/lib/server/auth/feide.ts`                |
+| Zod validators         | `src/lib/validators.ts`                       |
 | Sanity integration     | `src/lib/api/sanity/`                         |
 | Email templates        | `../programmerbar-email-templates/templates/` |
 | Cloudflare config      | `wrangler.jsonc`                              |

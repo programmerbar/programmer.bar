@@ -44,7 +44,7 @@
 				<UserCard {user} />
 			</li>
 		{:else}
-			<li class="block col-span-3 text-center py-4">
+			<li class="col-span-3 block py-4 text-center">
 				<p class="dark:text-gray-300">Fant ingen bruker</p>
 			</li>
 		{/each}
@@ -83,7 +83,7 @@
 					</p>
 				</li>
 			{:else}
-				<li class="block col-span-3 text-center py-4">
+				<li class="col-span-3 block py-4 text-center">
 					<p class="dark:text-gray-300">Ingen invitasjoner</p>
 				</li>
 			{/each}

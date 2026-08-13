@@ -19,22 +19,22 @@
     "clean": "rm -rf .sanity node_modules .turbo"
   },
   "dependencies": {
-    "@sanity/client": "7.17.0",
-    "@sanity/icons": "3.7.4",
-    "@sanity/vision": "5.14.1",
-    "groq": "5.14.1",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "sanity": "5.14.1",
-    "sanity-plugin-markdown": "8.0.5",
-    "sanity-plugin-media": "4.1.1",
-    "styled-components": "6.3.11"
+    "@sanity/client": "7.26.2",
+    "@sanity/icons": "5.2.1",
+    "@sanity/vision": "6.9.1",
+    "groq": "6.9.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "sanity": "6.9.1",
+    "sanity-plugin-markdown": "9.0.9",
+    "sanity-plugin-media": "6.1.1",
+    "styled-components": "6.5.0"
   },
   "devDependencies": {
-    "@sanity/eslint-config-studio": "6.0.0",
-    "@types/react": "19.2.14",
-    "eslint": "9.39.2",
-    "prettier": "3.8.1",
-    "typescript": "5.9.3"
+    "@types/react": "19.2.18",
+    "eslint": "10.8.0",
+    "prettier": "3.9.6",
+    "typescript-eslint": "8.66.0",
+    "typescript": "6.0.3"
   }
 }

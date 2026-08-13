@@ -1,5 +1,5 @@
 import { defineType, defineField } from "sanity";
-import { TrolleyIcon } from "@sanity/icons";
+import { TrolleyIcon } from "@sanity/icons/Trolley";
 
 export default defineType({
 	name: "product",

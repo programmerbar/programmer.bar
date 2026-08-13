@@ -19,7 +19,7 @@
     "add-invitation": "pnpm dlx tsx ./programmerbar-web/src/scripts/add-invitation.ts"
   },
   "devDependencies": {
-    "turbo": "2.9.6",
-    "typescript": "5.9.3"
+    "turbo": "2.10.8",
+    "typescript": "6.0.3"
   }
 }

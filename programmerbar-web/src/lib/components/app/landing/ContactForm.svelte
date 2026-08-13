@@ -17,12 +17,14 @@
 	<div class="flex flex-1 flex-col p-6">
 		<form
 			class="flex flex-1 flex-col space-y-4"
-			{...createContactSubmissionAction.enhance(async ({ form, submit }) => {
+			{...createContactSubmissionAction.enhance(async (form) => {
 				try {
-					await submit();
-					form.reset();
-
-					toast.success('Takk for din henvendelse!');
+					if (await form.submit()) {
+						form.element.reset();
+						toast.success('Takk for din henvendelse!');
+					} else {
+						toast.error('Kontroller feltene og prøv igjen.');
+					}
 				} catch {
 					toast.error(
 						'Noe gikk galt, prøv igjen senere. Hvis problemet vedvarer, kontakt oss på e-post, hei@programmerbar.no.'

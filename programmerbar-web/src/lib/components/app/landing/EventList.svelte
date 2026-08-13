@@ -115,12 +115,12 @@
 				</li>
 			{:else}
 				<li>
-					<div class="border-l-4 border-border bg-card-muted py-12 px-4 text-center font-mono">
+					<div class="border-border bg-card-muted border-l-4 px-4 py-12 text-center font-mono">
 						<p class="text-foreground-muted">$ ls arrangementer/</p>
-						<p class="mt-2 text-sm text-foreground-secondary">
+						<p class="text-foreground-secondary mt-2 text-sm">
 							ls: cannot access 'arrangementer/': No such file or directory
 						</p>
-						<p class="mt-4 text-sm text-foreground-muted">
+						<p class="text-foreground-muted mt-4 text-sm">
 							<span class="text-foreground-subtle">#</span> Følg med på våre sosiale medier for oppdateringer
 						</p>
 					</div>

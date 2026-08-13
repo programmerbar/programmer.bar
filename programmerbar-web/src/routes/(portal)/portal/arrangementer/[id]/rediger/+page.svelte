@@ -344,7 +344,7 @@
 					</article>
 				{:else}
 					<div
-						class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-center text-sm text-gray-500 dark:border-portal-border dark:bg-portal-hover dark:text-gray-400"
+						class="dark:border-portal-border dark:bg-portal-hover rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-center text-sm text-gray-500 dark:text-gray-400"
 					>
 						Ingen vakter registrert. Legg til den første for å starte planleggingen.
 					</div>

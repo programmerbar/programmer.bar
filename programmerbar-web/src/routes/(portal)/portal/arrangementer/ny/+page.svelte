@@ -300,7 +300,7 @@
 										</button>
 									</div>
 								{:else}
-									<p class="text-sm italic text-gray-500 dark:text-gray-400">
+									<p class="text-sm text-gray-500 italic dark:text-gray-400">
 										Ingen ansvarlige lagt til ennå. Husk å invitere minst én person.
 									</p>
 								{/each}
@@ -309,7 +309,7 @@
 					</article>
 				{:else}
 					<div
-						class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-center text-sm text-gray-500 dark:border-portal-border dark:bg-portal-hover dark:text-gray-400"
+						class="dark:border-portal-border dark:bg-portal-hover rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-center text-sm text-gray-500 dark:text-gray-400"
 					>
 						Ingen vakter lagt til ennå. Trykk «Legg til vakt» for å starte planleggingen.
 					</div>

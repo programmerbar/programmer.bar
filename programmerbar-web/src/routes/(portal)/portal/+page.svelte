@@ -207,9 +207,9 @@
 				</a>
 			{:else}
 				<div class="p-8 text-center">
-					<CircleAlert class="mx-auto h-12 w-12 text-gray-300 dark:text-gray-600 mb-4" />
+					<CircleAlert class="mx-auto mb-4 h-12 w-12 text-gray-300 dark:text-gray-600" />
 					<p class="text-lg font-medium text-gray-500 dark:text-gray-400">Ingen kommende vakter</p>
-					<p class="text-sm text-gray-400 dark:text-gray-500 mt-1">
+					<p class="mt-1 text-sm text-gray-400 dark:text-gray-500">
 						Du har ingen vakter å jobbe. Sjekk
 						<a
 							href={resolve('/portal/arrangementer')}

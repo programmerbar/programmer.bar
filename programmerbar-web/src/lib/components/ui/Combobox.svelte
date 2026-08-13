@@ -76,7 +76,7 @@
 						{/snippet}
 					</Combobox.Item>
 				{:else}
-					<span class="block px-5 py-2 text-sm text-muted-foreground dark:text-gray-400"
+					<span class="text-muted-foreground block px-5 py-2 text-sm dark:text-gray-400"
 						>No results found</span
 					>
 				{/each}

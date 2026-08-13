@@ -1,3 +1,8 @@
-import studio from "@sanity/eslint-config-studio";
+import typescript from "typescript-eslint";
 
-export default [...studio];
+export default [
+	...typescript.configs.recommended,
+	{
+		ignores: ["node_modules/**", ".sanity/**", "dist/**"]
+	}
+];

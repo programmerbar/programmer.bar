@@ -12,7 +12,6 @@ minimumReleaseAge: 10080
 # packages run custom scripts is a security vulnerability and should be
 # avoided.
 allowBuilds:
-  "@sentry/cli": true
   esbuild: true
   sharp: true
   workerd: true

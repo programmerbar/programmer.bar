@@ -94,7 +94,7 @@ pnpm deploy              # Deploy Sanity Studio
 - Cloudflare Workers (via @sveltejs/adapter-cloudflare)
 - Tailwind CSS 4.2 + Bits UI component library
 - Svelte 5.55 (Runes syntax)
-- Zod 4 for validation (`src/lib/validators.ts`), Sentry for error tracking, Turnstile for bot protection
+- Zod 4 for validation (`src/lib/validators.ts`) and Turnstile for bot protection
 
 **Data Layer**:
 

@@ -68,7 +68,6 @@
 		"@react-email/render": "^2.1.0",
 		"@sanity/client": "7.26.2",
 		"@sanity/image-url": "2.1.1",
-		"@sentry/sveltekit": "^10.69.0",
 		"arctic": "3.7.0",
 		"bits-ui": "2.18.1",
 		"class-variance-authority": "0.7.1",

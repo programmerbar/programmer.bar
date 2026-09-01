@@ -39,5 +39,5 @@
     pnpm dev
    ```
 
-- Website will run on [http://localhost:5173](http://localhost:5173)
-- Sanity will run on [http://localhost:3333](http://localhost:3333)
+- Website will run on <http://localhost:5173>
+- Sanity will run on <http://localhost:3333>

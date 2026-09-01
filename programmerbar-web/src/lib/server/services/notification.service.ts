@@ -37,6 +37,14 @@ export class NotificationService {
 		return notification[0];
 	}
 
+	async archiveAll(userId: string) {
+		return this.#db
+			.update(table.notifications)
+			.set({ archivedAt: new Date() })
+			.where(and(eq(table.notifications.userId, userId), isNull(table.notifications.archivedAt)))
+			.returning();
+	}
+
 	async find(notificationId: string) {
 		const notification = await this.#db
 			.select()

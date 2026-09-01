@@ -1,8 +1,8 @@
 <script lang="ts">
 	import Heading from '$lib/components/ui/Heading.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
-	import { Bell, Check, BellOff } from '@lucide/svelte';
-	import { archiveNotificationAction } from './data.remote';
+	import { Bell, Check, CheckCheck, BellOff } from '@lucide/svelte';
+	import { archiveAllNotificationsAction, archiveNotificationAction } from './data.remote';
 
 	let { data } = $props();
 </script>
@@ -13,18 +13,29 @@
 
 <div class="space-y-10">
 	<!-- Header -->
-	<div class="flex items-center gap-3">
-		<Bell class="h-6 w-6 text-gray-600 dark:text-gray-300" />
-		<div>
-			<Heading>Notifikasjoner</Heading>
-			<p class="mt-1 text-gray-600 dark:text-gray-300">
-				{#if data.notifications.length > 0}
-					Du har {data.notifications.length} uleste notifikasjoner
-				{:else}
-					Ingen nye notifikasjoner
-				{/if}
-			</p>
+	<div class="flex flex-wrap items-center justify-between gap-4">
+		<div class="flex items-center gap-3">
+			<Bell class="h-6 w-6 text-gray-600 dark:text-gray-300" />
+			<div>
+				<Heading>Notifikasjoner</Heading>
+				<p class="mt-1 text-gray-600 dark:text-gray-300">
+					{#if data.notifications.length > 0}
+						Du har {data.notifications.length} uleste notifikasjoner
+					{:else}
+						Ingen nye notifikasjoner
+					{/if}
+				</p>
+			</div>
 		</div>
+
+		{#if data.notifications.length > 0}
+			<form {...archiveAllNotificationsAction}>
+				<Button type="submit" intent="outline">
+					<CheckCheck class="h-4 w-4" />
+					Marker alle som lest
+				</Button>
+			</form>
+		{/if}
 	</div>
 
 	<!-- Notifications List -->

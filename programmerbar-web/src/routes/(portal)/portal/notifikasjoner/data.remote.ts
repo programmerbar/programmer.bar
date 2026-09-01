@@ -35,3 +35,20 @@ export const archiveNotificationAction = form(ArchiveBodySchema, async ({ notifi
 		message: 'Notification archived successfully'
 	};
 });
+
+export const archiveAllNotificationsAction = form(async () => {
+	const { locals } = getRequestEvent();
+	const user = locals.user;
+
+	if (!user) {
+		return fail(401, {
+			message: 'Unauthorized'
+		});
+	}
+
+	await locals.notificationService.archiveAll(user.id);
+
+	return {
+		message: 'All notifications archived successfully'
+	};
+});

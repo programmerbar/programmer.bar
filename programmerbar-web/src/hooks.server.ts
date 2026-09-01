@@ -144,7 +144,4 @@ const setup: Handle = async ({ event, resolve }) => {
 };
 
 // Allow Slack webhook endpoint to bypass CSRF protection
-export const handle = sequence(
-	csrf(['/slack-command']),
-	setup
-);
+export const handle = sequence(csrf(['/slack-command']), setup);

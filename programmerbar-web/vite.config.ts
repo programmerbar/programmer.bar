@@ -5,12 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 import mkcert from 'vite-plugin-mkcert';
 
 export default defineConfig(() => ({
-	plugins: [
-		sveltekit(),
-		tailwindcss(),
-		mkcert(),
-		devtoolsJson()
-	],
+	plugins: [sveltekit(), tailwindcss(), mkcert(), devtoolsJson()],
 	resolve: {
 		alias: { 'react-dom/server': 'react-dom/server.edge' }
 	}

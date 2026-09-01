@@ -2,7 +2,7 @@
 	import ButtonLink from '$lib/components/ui/ButtonLink.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import Heading from '$lib/components/ui/Heading.svelte';
-	import { History, ChevronLeft, ChevronRight } from '@lucide/svelte';
+	import { RotateCcwClock, ChevronLeft, ChevronRight } from '@lucide/svelte';
 	import { SvelteSet, SvelteURLSearchParams } from 'svelte/reactivity';
 
 	const formatter = new Intl.DateTimeFormat('no-NO', {
@@ -115,7 +115,7 @@
 <div class="space-y-10">
 	<!-- Header with back button -->
 	<div class="flex items-center gap-4">
-		<History class="h-6 w-6 text-gray-600 dark:text-gray-300" />
+		<RotateCcwClock class="h-6 w-6 text-gray-600 dark:text-gray-300" />
 		<div>
 			<Heading>Bonghistorikk</Heading>
 			<p class="mt-1 text-gray-600 dark:text-gray-300">Se historikk for bruk av bong</p>
@@ -143,7 +143,7 @@
 						type="datetime-local"
 						name="startDate"
 						value={data.filters?.startDate ?? ''}
-						class="dark:focus:border-primary dark:focus:ring-primary/20 border-portal-border dark:bg-portal-hover w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none dark:text-gray-100"
+						class="dark:focus:border-primary dark:focus:ring-primary/20 border-portal-border dark:bg-portal-hover w-full rounded-md border px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none dark:text-gray-100"
 					/>
 				</div>
 				<div class="flex flex-col gap-2">
@@ -155,7 +155,7 @@
 						type="datetime-local"
 						name="endDate"
 						value={data.filters?.endDate ?? ''}
-						class="dark:focus:border-primary dark:focus:ring-primary/20 border-portal-border dark:bg-portal-hover w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none dark:text-gray-100"
+						class="dark:focus:border-primary dark:focus:ring-primary/20 border-portal-border dark:bg-portal-hover w-full rounded-md border px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none dark:text-gray-100"
 					/>
 				</div>
 				<input type="hidden" name="page" value="1" />
@@ -183,7 +183,7 @@
 			</div>
 		{:else}
 			<div class="overflow-x-auto">
-				<table class="divide-portal-border w-full min-w-[720px] divide-y divide-gray-200">
+				<table class="divide-portal-border w-full min-w-180 divide-y">
 					<thead class="dark:bg-portal-hover bg-gray-50">
 						<tr
 							class="text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400"
@@ -194,9 +194,7 @@
 							<th class="px-6 py-3 text-right">Credits</th>
 						</tr>
 					</thead>
-					<tbody
-						class="divide-portal-border divide-y divide-gray-200 text-sm text-gray-700 dark:text-gray-300"
-					>
+					<tbody class="divide-portal-border divide-y text-sm text-gray-700 dark:text-gray-300">
 						{#each data.claimedCredits as entry (entry.id)}
 							<tr class="hover:bg-portal-hover transition-colors">
 								<td class="px-6 py-4 whitespace-nowrap">

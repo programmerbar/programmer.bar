@@ -16,7 +16,8 @@
     "db:migrate:local": "turbo run db:migrate:local",
     "extract": "turbo run extract",
     "typegen": "turbo run typegen",
-    "add-invitation": "pnpm dlx tsx ./programmerbar-web/src/scripts/add-invitation.ts"
+    "add-invitation": "pnpm dlx tsx ./programmerbar-web/src/scripts/add-invitation.ts",
+    "update-all": "pnpm -r update --latest -i"
   },
   "devDependencies": {
     "turbo": "2.10.8",

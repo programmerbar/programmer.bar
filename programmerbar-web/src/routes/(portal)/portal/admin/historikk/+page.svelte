@@ -224,6 +224,7 @@
 							intent="outline"
 							size="sm"
 							class="gap-1"
+							data-sveltekit-noscroll
 						>
 							<ChevronLeft class="h-4 w-4" />
 							Forrige
@@ -247,7 +248,12 @@
 								{item.value}
 							</span>
 						{:else}
-							<ButtonLink href={buildQuery({ page: item.value })} intent="outline" size="sm">
+							<ButtonLink
+								href={buildQuery({ page: item.value })}
+								intent="outline"
+								size="sm"
+								data-sveltekit-noscroll
+							>
 								{item.value}
 							</ButtonLink>
 						{/if}
@@ -259,6 +265,7 @@
 							intent="outline"
 							size="sm"
 							class="gap-1"
+							data-sveltekit-noscroll
 						>
 							Neste
 							<ChevronRight class="h-4 w-4" />

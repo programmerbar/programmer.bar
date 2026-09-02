@@ -1,5 +1,5 @@
 import type { Database } from '$lib/server/db/drizzle';
-import { eq, and, not, inArray } from 'drizzle-orm';
+import { eq, and, not, inArray, or, sql } from 'drizzle-orm';
 import { users, type UserInsert } from '$lib/server/db/schemas';
 
 export class UserService {
@@ -25,6 +25,20 @@ export class UserService {
 	async findByFeideIdIncludeDeleted(feideId: string) {
 		return await this.#db.query.users.findFirst({
 			where: (row, { eq }) => eq(row.feideId, feideId)
+		});
+	}
+
+	async findActiveByEmail(email: string) {
+		const normalizedEmail = email.trim().toLowerCase();
+		return await this.#db.query.users.findFirst({
+			where: (row, { and, not }) =>
+				and(
+					or(
+						sql`lower(${row.email}) = ${normalizedEmail}`,
+						sql`lower(${row.altEmail}) = ${normalizedEmail}`
+					),
+					not(row.isDeleted)
+				)
 		});
 	}
 

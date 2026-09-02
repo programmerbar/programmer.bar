@@ -23,6 +23,11 @@ export type InvitationEmailProps = {
 	email: string;
 };
 
+export type MagicLinkEmailProps = {
+	email: string;
+	url: string;
+};
+
 export type VolunteerRequestEmailProps = {
 	name: string;
 	email: string;
@@ -164,6 +169,15 @@ export class EmailService {
 		});
 	}
 
+	async sendMagicLinkEmail(data: MagicLinkEmailProps) {
+		await this.sendEmail({
+			from: FROM_EMAIL,
+			subject: 'Logg inn på Programmerbar',
+			to: [data.email],
+			text: `Logg inn på Programmerbar ved å åpne denne lenken:\n\n${data.url}\n\nLenken er gyldig i 15 minutter og kan bare brukes en gang. Hvis du ikke ba om denne e-posten, kan du trygt ignorere den.`
+		});
+	}
+
 	async sendVolunteerRequestEmail(data: VolunteerRequestEmailProps) {
 		await this.sendEmail({
 			from: FROM_EMAIL,
@@ -205,7 +219,7 @@ export class EmailService {
 		console.log(`[EmailService] ###### SENDING EMAIL ########`);
 		console.log(`[EmailService] To: ${payload.to}`);
 		console.log(`[EmailService] Subject: ${payload.subject}`);
-		console.log(payload.html);
+		console.log(payload.html ?? payload.text);
 		console.log(`[EmailService] #############################`);
 
 		if (payload.attachments) {

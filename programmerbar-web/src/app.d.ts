@@ -22,6 +22,7 @@ declare global {
 			emailService: import('$lib/server/services/email.service').EmailService;
 			statusService: import('$lib/server/services/status.service').StatusService;
 			rateLimitService: import('$lib/server/services/rate-limit.service').RateLimitService;
+			magicLinkService: import('$lib/server/services/magic-link.service').MagicLinkService;
 			invitationService: import('$lib/server/services/invitation.service').InvitationService;
 			eventService: import('$lib/server/services/event.service').EventService;
 			userService: import('$lib/server/services/user.service').UserService;

@@ -39,15 +39,26 @@
 			</div>
 
 			<form use:enhance method="post" class="flex flex-col gap-2">
-				<label for="email" class="text-foreground-muted font-mono text-sm">E-post</label>
+				<label for="email" class="text-foreground-muted font-mono text-sm">
+					E-post{#if data.devLogins.length > 0}
+						eller utviklerbruker{/if}
+				</label>
 				<input
 					id="email"
 					name="email"
-					type="email"
+					type={data.devLogins.length > 0 ? 'text' : 'email'}
 					required
 					autocomplete="email"
+					placeholder={data.devLogins.length > 0
+						? `E-post eller ${data.devLogins.join('/')}`
+						: undefined}
 					class="border-border bg-card text-foreground-primary focus:border-primary border-2 px-4 py-3 font-mono text-sm outline-none"
 				/>
+				{#if data.devLogins.length > 0}
+					<p class="text-foreground-muted text-xs">
+						Utviklerbrukere: {data.devLogins.join(', ')}
+					</p>
+				{/if}
 				<button
 					type="submit"
 					class="border-border bg-card-muted hover:bg-card-hover hover:border-primary text-foreground-primary cursor-pointer border-2 px-4 py-3 text-center font-mono text-sm font-semibold transition-all"

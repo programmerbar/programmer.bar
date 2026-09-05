@@ -31,6 +31,17 @@ You can then navigate to the login page and log in with your Feide account.
 > You UiB email address should be the one that ends with `@student.uib.no`. This is usally the email
 > that we get from Feide when you authenticate.
 
+### Without Feide
+
+When the app is running in development mode, navigate to `/logg-inn` and enter `board` in the email
+field. The app creates a generic board member if it does not exist, signs you in immediately, and
+reuses the same user on later logins. This shortcut is not available in production.
+
+Development logins are configured in `DEV_USERS` in
+`programmerbar-web/src/routes/(app)/logg-inn/+page.server.ts`. Add another entry there to make more
+development users available; account creation, restoration, role assignment, and login are handled
+by the shared `handleDevLogin` function.
+
 ## Becoming a board member
 
 To become a board member and gain administrator privileges on the site after you have logged in, you
@@ -72,14 +83,14 @@ A common shape looks like this:
 
 ```typescript
 const formSchema = z.object({
-	name: z.string().min(1),
-	email: z.email()
+  name: z.string().min(1),
+  email: z.email(),
 });
 
 const result = formSchema.safeParse(values);
 
 if (!result.success) {
-	// Return a useful error to the form.
+  // Return a useful error to the form.
 }
 ```
 

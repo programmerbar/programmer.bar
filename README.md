@@ -41,3 +41,7 @@
 
 - Website will run on <http://localhost:5173>
 - Sanity will run on <http://localhost:3333>
+
+## Documentation
+
+Read more in the [documentation](./docs/README.md).

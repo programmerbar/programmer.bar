@@ -8,7 +8,7 @@ async function main() {
 	const email = process.argv[2];
 
 	if (!email) {
-		throw new Error('Email is required. Example: pnpm add-invitation -- "some@email.com"');
+		throw new Error('Email is required. Example: pnpm add-invitation "some@email.com"');
 	}
 
 	await db.insert(invitations).values({

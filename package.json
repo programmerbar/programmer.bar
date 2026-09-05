@@ -17,6 +17,7 @@
     "extract": "turbo run extract",
     "typegen": "turbo run typegen",
     "add-invitation": "pnpm dlx tsx ./programmerbar-web/src/scripts/add-invitation.ts",
+    "add-board": "pnpm dlx tsx ./programmerbar-web/src/scripts/add-board.ts",
     "update-all": "pnpm -r update --latest -i"
   },
   "devDependencies": {

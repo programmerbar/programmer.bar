@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { USER_ROLE_FILTER_OPTIONS } from '$lib/utils/user-presentation';
+	import UserBadge from '$lib/components/portal/UserBadge.svelte';
 	import Training from '$lib/components/portal/Training.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import Heading from '$lib/components/ui/Heading.svelte';
@@ -121,11 +123,7 @@
 			<div>
 				<Select
 					bind:value={selectedRole}
-					options={[
-						{ label: 'Alle roller', value: 'all' },
-						{ label: 'Styret', value: 'board' },
-						{ label: 'Frivillige', value: 'normal' }
-					]}
+					options={[{ label: 'Alle roller', value: 'all' }, ...USER_ROLE_FILTER_OPTIONS]}
 				/>
 			</div>
 		</div>
@@ -220,9 +218,7 @@
 					</div>
 					<div class="flex flex-col items-end gap-2">
 						{@render trainingStatus(user)}
-						<Pill variant={user.role === 'board' ? 'purple' : 'blue'}>
-							{!user.isActive ? 'Inaktiv' : user.role === 'board' ? 'Styret' : 'Frivillig'}
-						</Pill>
+						<UserBadge {user} />
 						<a
 							href={resolve('/(portal)/portal/admin/bruker/[id]', { id: user.id })}
 							class="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
@@ -332,9 +328,7 @@
 								</div>
 							</td>
 							<td class="px-3 py-4 whitespace-nowrap">
-								<Pill variant={user.role === 'board' ? 'purple' : 'blue'}>
-									{!user.isActive ? 'Inaktiv' : user.role === 'board' ? 'Styret' : 'Frivillig'}
-								</Pill>
+								<UserBadge {user} />
 							</td>
 							<td class="px-3 py-4 text-right text-sm whitespace-nowrap">
 								<span class="hidden @min-[800px]:inline">{@render trainingStatus(user)}</span>

@@ -1,9 +1,10 @@
 <script lang="ts">
+	import { USER_ROLE_OPTIONS, VOLUNTEER_STATUS } from '$lib/utils/user-presentation';
+	import UserBadge from '$lib/components/portal/UserBadge.svelte';
 	import Heading from '$lib/components/ui/Heading.svelte';
 	import Input from '$lib/components/ui/Input.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import ButtonLink from '$lib/components/ui/ButtonLink.svelte';
-	import Pill from '$lib/components/ui/Pill.svelte';
 	import { initials } from '$lib/utils/strings.js';
 	import { enhance } from '$app/forms';
 	import { ArrowLeft, UserCog } from '@lucide/svelte';
@@ -77,9 +78,7 @@
 			<div class="min-w-0 flex-1">
 				<Heading class="mb-1 truncate">{user.name}</Heading>
 				<div class="flex items-center gap-3">
-					<Pill variant={user.role === 'board' ? 'purple' : 'blue'}>
-						{!user.isActive ? 'Inaktiv' : user.role === 'board' ? 'Styret' : 'Frivillig'}
-					</Pill>
+					<UserBadge {user} />
 				</div>
 			</div>
 		</div>
@@ -145,35 +144,12 @@
 					>
 						<div class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200">Rolle</div>
 						<div class="flex items-center gap-3">
-							<label class="flex cursor-pointer items-center">
-								<input
-									type="radio"
-									name="role"
-									value="normal"
-									class="peer sr-only"
-									bind:group={editForm.role}
-								/>
-								<div
-									class="dark:border-portal-border dark:hover:bg-portal-hover flex items-center justify-center rounded-lg border px-4 py-2 text-sm transition-colors peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 hover:bg-gray-50 dark:text-gray-300 dark:peer-checked:border-blue-400 dark:peer-checked:bg-blue-950/50 dark:peer-checked:text-blue-300"
-								>
-									Frivillig
-								</div>
-							</label>
-
-							<label class="flex cursor-pointer items-center">
-								<input
-									type="radio"
-									name="role"
-									value="board"
-									class="peer sr-only"
-									bind:group={editForm.role}
-								/>
-								<div
-									class="dark:border-portal-border dark:hover:bg-portal-hover flex items-center justify-center rounded-lg border px-4 py-2 text-sm transition-colors peer-checked:border-purple-500 peer-checked:bg-purple-50 peer-checked:text-purple-700 hover:bg-gray-50 dark:text-gray-300 dark:peer-checked:border-purple-400 dark:peer-checked:bg-purple-950/50 dark:peer-checked:text-purple-300"
-								>
-									Styret
-								</div>
-							</label>
+							{#each USER_ROLE_OPTIONS as role (role.value)}
+								<label class="flex cursor-pointer items-center gap-2">
+									<input type="radio" name="role" value={role.value} bind:group={editForm.role} />
+									{role.label}
+								</label>
+							{/each}
 						</div>
 					</div>
 				</div>
@@ -181,7 +157,7 @@
 				<div class="space-y-2">
 					<label class="flex items-center gap-2">
 						<input type="checkbox" bind:checked={editForm.isActive} />
-						Aktiv frivillig
+						{VOLUNTEER_STATUS.active.label}
 					</label>
 					<input type="hidden" name="isActive" value={String(editForm.isActive)} />
 					<p class="text-sm text-gray-500 dark:text-gray-400">

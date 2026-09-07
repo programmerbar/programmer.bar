@@ -1,4 +1,5 @@
-import { error, redirect } from '@sveltejs/kit';
+import { z } from 'zod';
+import { error, fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
@@ -30,6 +31,8 @@ export const actions: Actions = {
 
 		const userId = params.id;
 		const formData = await request.formData();
+		const activeStatus = z.enum(['true', 'false']).safeParse(formData.get('isActive'));
+		if (!activeStatus.success) return fail(400, { message: 'Ugyldig frivilligstatus' });
 		const role = formData.get('role')?.toString() as 'board' | 'normal';
 		const phone = formData.get('phone')?.toString();
 		const canRefer = formData.get('canRefer') === 'true';
@@ -40,6 +43,7 @@ export const actions: Actions = {
 		if (role) {
 			await locals.userService.updateUserRole(userId, role);
 		}
+		await locals.userService.updateActiveStatus(userId, activeStatus.data === 'true');
 		await locals.userService.updateCanRefer(userId, canRefer);
 
 		throw redirect(303, `/portal/admin/bruker/${userId}`);

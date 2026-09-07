@@ -221,7 +221,7 @@
 					<div class="flex flex-col items-end gap-2">
 						{@render trainingStatus(user)}
 						<Pill variant={user.role === 'board' ? 'purple' : 'blue'}>
-							{user.role === 'board' ? 'Styret' : 'Frivillig'}
+							{!user.isActive ? 'Inaktiv' : user.role === 'board' ? 'Styret' : 'Frivillig'}
 						</Pill>
 						<a
 							href={resolve('/(portal)/portal/admin/bruker/[id]', { id: user.id })}
@@ -333,7 +333,7 @@
 							</td>
 							<td class="px-3 py-4 whitespace-nowrap">
 								<Pill variant={user.role === 'board' ? 'purple' : 'blue'}>
-									{user.role === 'board' ? 'Styret' : 'Frivillig'}
+									{!user.isActive ? 'Inaktiv' : user.role === 'board' ? 'Styret' : 'Frivillig'}
 								</Pill>
 							</td>
 							<td class="px-3 py-4 text-right text-sm whitespace-nowrap">

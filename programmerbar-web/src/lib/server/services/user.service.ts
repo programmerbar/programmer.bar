@@ -61,6 +61,20 @@ export class UserService {
 		return users;
 	}
 
+	async findAllActiveVolunteers() {
+		return await this.#db.query.users.findMany({
+			where: (row, { and, eq, not }) => and(eq(row.isActive, true), not(row.isDeleted))
+		});
+	}
+
+	async updateActiveStatus(userId: string, isActive: boolean) {
+		return await this.#db
+			.update(users)
+			.set({ isActive })
+			.where(and(eq(users.id, userId), not(users.isDeleted)))
+			.returning();
+	}
+
 	async updateUserRole(userId: string, role: 'board' | 'normal') {
 		const updatedUser = await this.#db
 			.update(users)

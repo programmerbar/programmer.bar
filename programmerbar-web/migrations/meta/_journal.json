@@ -183,6 +183,13 @@
       "when": 1761506366435,
       "tag": "0025_early_wither",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "6",
+      "when": 1788816908576,
+      "tag": "0026_rare_skrulls",
+      "breakpoints": true
     }
   ]
 }

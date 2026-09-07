@@ -18,6 +18,7 @@ export const users = sqliteTable(
 			.default('normal'),
 		additionalBeers: integer().default(0).notNull(),
 		altEmail: text(),
+		isActive: integer({ mode: 'boolean' }).default(true).notNull(),
 		isDeleted: integer({ mode: 'boolean' }).default(false).notNull(),
 		phone: text(),
 		isTrained: integer({ mode: 'boolean' }).default(false).notNull(),

@@ -6,6 +6,7 @@ import {
 	type ShiftInsert,
 	type UserShiftInsert
 } from '$lib/server/db/schemas';
+import { error } from '@sveltejs/kit';
 import { and, eq } from 'drizzle-orm';
 
 export class EventService {
@@ -40,10 +41,25 @@ export class EventService {
 		return createdShifts;
 	}
 
+	async assertActiveVolunteers(userIds: string[]) {
+		const ids = [...new Set(userIds)];
+		if (ids.length === 0) return;
+		const eligible = await this.#db.query.users.findMany({
+			where: (row, { and, inArray, eq, not }) =>
+				and(inArray(row.id, ids), eq(row.isActive, true), not(row.isDeleted)),
+			columns: { id: true }
+		});
+		if (eligible.length !== ids.length) {
+			error(400, 'Bare aktive frivillige kan legges til på vakter.');
+		}
+	}
+
 	async createUserShifts(values: Array<UserShiftInsert>) {
 		if (values.length === 0) {
 			return;
 		}
+
+		await this.assertActiveVolunteers(values.map((value) => value.userId));
 
 		const result = await this.#db.insert(userShifts).values(values);
 		return result;

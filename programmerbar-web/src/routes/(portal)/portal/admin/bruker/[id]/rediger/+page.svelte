@@ -15,12 +15,14 @@
 	let user = $derived(data.user as User);
 
 	let editForm = $state({
+		isActive: user.isActive,
 		role: user.role,
 		phone: user.phone || '',
 		canRefer: user.canRefer ?? true
 	});
 
 	$effect(() => {
+		editForm.isActive = data.user.isActive;
 		editForm.role = data.user.role;
 		editForm.phone = data.user.phone || '';
 		editForm.canRefer = data.user.canRefer ?? true;
@@ -76,7 +78,7 @@
 				<Heading class="mb-1 truncate">{user.name}</Heading>
 				<div class="flex items-center gap-3">
 					<Pill variant={user.role === 'board' ? 'purple' : 'blue'}>
-						{user.role === 'board' ? 'Styret' : 'Frivillig'}
+						{!user.isActive ? 'Inaktiv' : user.role === 'board' ? 'Styret' : 'Frivillig'}
 					</Pill>
 				</div>
 			</div>
@@ -176,6 +178,18 @@
 					</div>
 				</div>
 
+				<div class="space-y-2">
+					<label class="flex items-center gap-2">
+						<input type="checkbox" bind:checked={editForm.isActive} />
+						Aktiv frivillig
+					</label>
+					<input type="hidden" name="isActive" value={String(editForm.isActive)} />
+					<p class="text-sm text-gray-500 dark:text-gray-400">
+						Inaktive kan fortsatt logge inn og bruke bongene sine, men kan ikke legges til på nye
+						vakter.
+					</p>
+				</div>
+
 				<!-- Can Refer Setting -->
 				<div
 					class="dark:border-portal-border dark:bg-portal-hover rounded-lg border border-gray-200 bg-white p-4"
@@ -193,6 +207,7 @@
 							<input
 								type="checkbox"
 								name="canRefer"
+								value="true"
 								bind:checked={editForm.canRefer}
 								class="dark:border-portal-border dark:bg-portal-hover h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:checked:bg-blue-600 dark:focus:ring-blue-500"
 							/>

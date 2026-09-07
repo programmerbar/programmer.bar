@@ -86,7 +86,7 @@
 					<Heading class="mb-1 truncate">{user.name}</Heading>
 					<div class="flex items-center gap-3">
 						<Pill variant={user.role === 'board' ? 'purple' : 'blue'}>
-							{user.role === 'board' ? 'Styret' : 'Frivillig'}
+							{!user.isActive ? 'Inaktiv' : user.role === 'board' ? 'Styret' : 'Frivillig'}
 						</Pill>
 					</div>
 				</div>
@@ -135,7 +135,7 @@
 							<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Rolle</dt>
 							<dd class="mt-1">
 								<Pill variant={user.role === 'board' ? 'purple' : 'blue'}>
-									{user.role === 'board' ? 'Styret' : 'Frivillig'}
+									{!user.isActive ? 'Inaktiv' : user.role === 'board' ? 'Styret' : 'Frivillig'}
 								</Pill>
 							</dd>
 						</div>

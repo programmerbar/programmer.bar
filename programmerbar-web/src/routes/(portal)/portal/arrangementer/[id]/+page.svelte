@@ -250,7 +250,7 @@
 									</p>
 								</div>
 
-								{#if !isPastEvent}
+								{#if !isPastEvent && (isInShift || user.current?.isActive)}
 									<div class="mt-4 flex flex-wrap gap-2">
 										{#if !isInShift}
 											<form action="?/join" method="post" use:enhance>

@@ -42,10 +42,14 @@ export class EventService {
 
 	async createUserShifts(values: Array<UserShiftInsert>) {
 		if (values.length === 0) {
-			return;
+			return [];
 		}
 
-		const result = await this.#db.insert(userShifts).values(values);
+		const result = await this.#db
+			.insert(userShifts)
+			.values(values)
+			.onConflictDoNothing({ target: [userShifts.userId, userShifts.shiftId] })
+			.returning();
 		return result;
 	}
 
@@ -74,6 +78,17 @@ export class EventService {
 				}
 			}
 		});
+
+		if (event) {
+			for (const shift of event.shifts) {
+				const seen = new Set<string>();
+				shift.members = shift.members.filter((member) => {
+					if (seen.has(member.userId)) return false;
+					seen.add(member.userId);
+					return true;
+				});
+			}
+		}
 
 		return event;
 	}

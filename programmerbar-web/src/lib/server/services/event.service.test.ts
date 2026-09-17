@@ -7,7 +7,9 @@ import { EventService } from './event.service';
 
 describe('volunteer assignments', () => {
 	function setup(eligible: { id: string }[]) {
-		const values = vi.fn().mockResolvedValue(undefined);
+		const returning = vi.fn().mockResolvedValue([]);
+		const onConflictDoNothing = vi.fn().mockReturnValue({ returning });
+		const values = vi.fn().mockReturnValue({ onConflictDoNothing });
 		const insert = vi.fn().mockReturnValue({ values });
 		const findMany = vi.fn().mockResolvedValue(eligible);
 		const db = { query: { users: { findMany } }, insert } as unknown as Database;

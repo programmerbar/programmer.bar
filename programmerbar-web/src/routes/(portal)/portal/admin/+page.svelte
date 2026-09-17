@@ -269,7 +269,7 @@
 							</button>
 						</th>
 						<th
-							class="px-3 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
+							class="hidden px-3 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase @min-[960px]:table-cell dark:text-gray-400"
 						>
 							E-post
 						</th>
@@ -303,7 +303,7 @@
 				<tbody class="divide-portal-border divide-y divide-gray-200">
 					{#each filteredUsers as user (user.id)}
 						<tr class="hover:bg-portal-hover transition-colors">
-							<td class="px-3 py-4 whitespace-nowrap">
+							<td class="px-3 py-4 wrap-anywhere">
 								<div class="flex min-w-0 items-center gap-2">
 									{@render trainingSelection(user)}
 									<div class="h-10 w-10 shrink-0">
@@ -319,10 +319,13 @@
 										<div class="text-sm font-medium text-gray-900 dark:text-gray-100">
 											{user.name}
 										</div>
+										<div class="mt-1 text-sm text-gray-600 @min-[960px]:hidden dark:text-gray-300">
+											{user.altEmail || user.email}
+										</div>
 									</div>
 								</div>
 							</td>
-							<td class="px-3 py-4 whitespace-nowrap">
+							<td class="hidden px-3 py-4 wrap-anywhere @min-[960px]:table-cell">
 								<div class="text-sm text-gray-600 dark:text-gray-300">
 									{user.altEmail || user.email}
 								</div>

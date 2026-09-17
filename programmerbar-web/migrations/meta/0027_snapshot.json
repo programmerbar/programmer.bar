@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "e982dbc1-a960-4bbf-ad49-b48bdc24d6d8",
-  "prevId": "ee04feed-009b-41fe-becd-df6062fbb1e9",
+  "id": "db9e22cc-9aa4-473d-a9f0-971f68aff4f4",
+  "prevId": "e982dbc1-a960-4bbf-ad49-b48bdc24d6d8",
   "tables": {
     "claimed_credits": {
       "name": "claimed_credits",
@@ -616,6 +616,14 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
         },
         "is_deleted": {
           "name": "is_deleted",

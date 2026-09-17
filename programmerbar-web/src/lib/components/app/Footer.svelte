@@ -55,7 +55,7 @@
 					<div>
 						<a
 							class="opacity-80 transition-opacity hover:opacity-100"
-							href="mailto:hei@programmerbar.no">hei@programmerbar.no</a
+							href="mailto:leder@programmerbar.no">leder@programmerbar.no</a
 						>
 					</div>
 					<p class="opacity-80">

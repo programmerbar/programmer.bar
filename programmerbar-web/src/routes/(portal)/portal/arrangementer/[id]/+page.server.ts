@@ -85,11 +85,15 @@ export const actions: Actions = {
 			});
 		}
 
-		await locals.eventService.createUserShift({
+		const created = await locals.eventService.createUserShift({
 			shiftId,
 			userId: locals.user.id,
 			status: 'accepted'
 		});
+
+		if (created.length === 0) {
+			return { success: true };
+		}
 
 		// Notify board members
 		const event = await locals.eventService.findFullEventById(params.id);

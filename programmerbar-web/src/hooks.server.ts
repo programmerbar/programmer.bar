@@ -64,7 +64,7 @@ const setup: Handle = async ({ event, resolve }) => {
 	event.locals.feideProvider = feideProvider;
 
 	// Setup services
-	event.locals.statusService = new StatusService(STATUS_KV);
+	event.locals.statusService = new StatusService(STATUS_KV, db);
 	event.locals.rateLimitService = new RateLimitService(STATUS_KV);
 	event.locals.magicLinkService = new MagicLinkService(STATUS_KV);
 	event.locals.emailService = new EmailService(sendEmail);

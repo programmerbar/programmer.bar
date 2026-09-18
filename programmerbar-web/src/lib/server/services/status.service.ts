@@ -1,6 +1,10 @@
 import z from 'zod';
+import type { Database } from '../db/drizzle';
+import { shifts } from '../db/schemas/shifts';
+import { sql } from 'drizzle-orm';
 
-export const STATUS_KEY = 'status';
+// A new key makes automatic scheduling the default, ignoring the old static status.
+const OVERRIDE_KEY = 'status-override';
 
 export const STATUS = {
 	CLOSED: 0,
@@ -10,17 +14,40 @@ export const STATUS = {
 
 export class StatusService {
 	#kv: KVNamespace;
+	#db: Database;
 
-	constructor(kv: KVNamespace) {
+	constructor(kv: KVNamespace, db: Database) {
 		this.#kv = kv;
+		this.#db = db;
 	}
 
-	async get() {
-		return Number(await this.#kv.get(STATUS_KEY));
+	async getOverride() {
+		const value = await this.#kv.get(OVERRIDE_KEY);
+		return value === null ? null : Number(value);
+	}
+
+	async get(now = new Date()) {
+		const override = await this.getOverride();
+		if (override !== null) return override;
+
+		// Compare Unix seconds, matching Drizzle's timestamp storage. Grouping keeps
+		// the bar open between shifts belonging to the same event, also past midnight.
+		const timestamp = Math.floor(now.getTime() / 1000);
+		const activeEvents = await this.#db
+			.select({ eventId: shifts.eventId })
+			.from(shifts)
+			.groupBy(shifts.eventId)
+			.having(sql`min(${shifts.startAt}) <= ${timestamp} and max(${shifts.endAt}) > ${timestamp}`)
+			.limit(1);
+		return activeEvents.length > 0 ? STATUS.OPEN : STATUS.CLOSED;
+	}
+
+	async setAutomatic() {
+		await this.#kv.delete(OVERRIDE_KEY);
 	}
 
 	async set(status: number) {
-		await this.#kv.put(STATUS_KEY, String(status));
+		await this.#kv.put(OVERRIDE_KEY, String(status));
 	}
 
 	async getWithMessage() {

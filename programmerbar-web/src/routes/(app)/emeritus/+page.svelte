@@ -46,12 +46,12 @@
 		{
 			name: 'Tord Vikøren Vikestad',
 			membership: { start: 'Høst 2025' },
-			roles: [{ title: 'Bygg/admin' }]
+			roles: [{ title: 'Bygg/admin', period: { start: 'Høst 2025' } }]
 		},
 		{
 			name: 'Henrik Sætre Breivik',
 			membership: { start: 'Høst 2025' },
-			roles: [{ title: 'Quiz- og arrangementsansvarlig' }]
+			roles: [{ title: 'Quiz- og arrangementsansvarlig', period: { start: 'Høst 2025' } }]
 		},
 		{ name: 'Anna Sviland', membership: { start: 'Høst 2026' }, roles: [] },
 		{ name: 'Anna Valencia Fari', membership: { start: 'Høst 2026' }, roles: [] },
@@ -83,21 +83,25 @@
 		{ name: 'Lars Bysheim', roles: [] },
 		{ name: 'Lars Haukland', roles: [] },
 		{ name: 'Eirik Rekve Thorsheim', roles: [] },
-		{ name: 'Tony Bao Lam', membership: { end: 'Vår 2026' }, roles: [{ title: 'Innkjøp' }] },
+		{
+			name: 'Tony Bao Lam',
+			membership: { end: 'Vår 2026' },
+			roles: [{ title: 'Innkjøp', period: { end: 'Vår 2026' } }]
+		},
 		{
 			name: 'Lene Soltveit',
 			membership: { end: 'Vår 2026' },
-			roles: [{ title: 'Økonomiansvarlig' }]
+			roles: [{ title: 'Økonomiansvarlig', period: { end: 'Vår 2026' } }]
 		},
 		{
 			name: 'Ole Magnus Fon Johnsen',
 			membership: { end: 'Vår 2026' },
-			roles: [{ title: 'Webansvarlig' }]
+			roles: [{ title: 'Webansvarlig', period: { end: 'Vår 2026' } }]
 		},
 		{
 			name: 'Fredrik Hast Sørli',
 			membership: { start: 'Høst 2025', end: 'Vår 2026' },
-			roles: [{ title: 'Økonomiassistent' }]
+			roles: [{ title: 'Økonomiassistent', period: { start: 'Høst 2025', end: 'Vår 2026' } }]
 		}
 	];
 
@@ -107,11 +111,54 @@
 		if (start) return current ? `${start} – nå` : `Fra ${start.toLowerCase()}`;
 		return '';
 	}
+
+	// Spring comes before autumn within a calendar year.
+	function semesterIndex(semester: Semester): number {
+		const [season, year] = semester.split(' ');
+		return Number(year) * 2 + (season === 'Høst' ? 1 : 0);
+	}
+
+	function overlapsYear(period: Period | undefined, year: number, current: boolean): boolean {
+		if (!period?.start && !period?.end) return false;
+		// An unknown boundary must not imply membership in earlier/later years.
+		const start = semesterIndex((period.start ?? period.end)!);
+		const end = period.end ? semesterIndex(period.end) : current ? Infinity : start;
+		return start <= (year + 1) * 2 && end >= year * 2 + 1;
+	}
+
+	const allMembers = [...members, ...pastMembers];
+	const recordedYears = allMembers.flatMap((member) =>
+		[member.membership, ...member.roles.map((role) => role.period)].flatMap((period) =>
+			[period?.start, period?.end].flatMap((semester) =>
+				semester ? [Math.floor((semesterIndex(semester) - 1) / 2)] : []
+			)
+		)
+	);
+	const boardYears = recordedYears.length
+		? Array.from(
+				{ length: Math.max(...recordedYears) - Math.min(...recordedYears) + 1 },
+				(_, index) => Math.max(...recordedYears) - index
+			)
+		: [];
+	let selectedYear = $state('all');
+	const filteredMembers = $derived(
+		allMembers.filter((member) => {
+			const current = members.includes(member);
+			return (
+				overlapsYear(member.membership, Number(selectedYear), current) ||
+				member.roles.some((role) => overlapsYear(role.period, Number(selectedYear), current))
+			);
+		})
+	);
 </script>
 
-{#snippet memberList(list: Member[], current: boolean)}
+{#snippet memberList(list: Member[])}
 	<ul class="space-y-4">
 		{#each list as member (member.name)}
+			{@const current = members.includes(member)}
+			{@const roles = member.roles.filter(
+				(role) => selectedYear === 'all' || overlapsYear(role.period, Number(selectedYear), current)
+			)}
 			{@const membershipPeriod = formatPeriod(
 				member.membership?.start,
 				member.membership?.end,
@@ -124,9 +171,9 @@
 						>I styret: {membershipPeriod}</span
 					>
 				{/if}
-				{#if member.roles.length}
+				{#if roles.length}
 					<ul class="mt-1 space-y-2">
-						{#each member.roles as entry}
+						{#each roles as entry}
 							{@const period = formatPeriod(entry.period?.start, entry.period?.end, current)}
 							<li>
 								<span class="text-foreground-secondary block text-sm">{entry.title}</span>
@@ -164,34 +211,78 @@
 			</div>
 
 			<div class="space-y-8 text-left">
-				<!-- Co-founders -->
 				<div>
-					<h2 class="text-foreground-primary mb-4 text-lg font-semibold">
-						<span class="text-foreground-muted">##</span> Co-founders
-					</h2>
-					<ul class="space-y-2">
-						{#each coFounders as founder (founder.name)}
-							<li class="border-primary border-l-4 pl-4">
-								<span class="block">{founder.name}</span>
-								<span class="text-foreground-muted mt-0.5 block text-sm">{founder.role}</span>
-							</li>
+					<label for="board-year" class="text-foreground-primary mb-2 block text-sm font-medium"
+						>Vis styre</label
+					>
+					<select
+						id="board-year"
+						bind:value={selectedYear}
+						class="border-primary bg-background text-foreground-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-sm focus:ring-2"
+						aria-describedby="board-history-note"
+					>
+						<option value="all">Hele listen</option>
+						{#each boardYears as year (year)}
+							<option value={String(year)}>Høst {year} – vår {year + 1}</option>
 						{/each}
-					</ul>
+					</select>
+					<p id="board-history-note" class="text-foreground-muted mt-3 text-sm">
+						Historikken er ikke komplett. Flere kan ha sittet i styret i de ulike semestrene uten å
+						være lagt til her ennå.
+						{#if selectedYear !== 'all'}
+							Utvalget viser medlemmer med registrert periode i dette styreåret. Medlemmer uten
+							kjent periode finner du i hele listen.
+						{/if}
+					</p>
 				</div>
+				{#if selectedYear === 'all'}
+					<!-- Co-founders -->
+					<div>
+						<h2 class="text-foreground-primary mb-4 text-lg font-semibold">
+							<span class="text-foreground-muted">##</span> Co-founders
+						</h2>
+						<ul class="space-y-2">
+							{#each coFounders as founder (founder.name)}
+								<li class="border-primary border-l-4 pl-4">
+									<span class="block">{founder.name}</span>
+									<span class="text-foreground-muted mt-0.5 block text-sm">{founder.role}</span>
+								</li>
+							{/each}
+						</ul>
+					</div>
 
-				<div>
-					<h2 class="text-foreground-primary mb-4 text-lg font-semibold">
-						<span class="text-foreground-muted">##</span> Styremedlemmer
-					</h2>
-					{@render memberList(members, true)}
-				</div>
+					<div>
+						<h2 class="text-foreground-primary mb-4 text-lg font-semibold">
+							<span class="text-foreground-muted">##</span> Styremedlemmer
+						</h2>
+						{@render memberList(members)}
+					</div>
 
-				<div>
-					<h2 class="text-foreground-primary mb-4 text-lg font-semibold">
-						<span class="text-foreground-muted">##</span> Tidligere Styremedlemmer
-					</h2>
-					{@render memberList(pastMembers, false)}
-				</div>
+					<div>
+						<h2 class="text-foreground-primary mb-4 text-lg font-semibold">
+							<span class="text-foreground-muted">##</span> Tidligere Styremedlemmer
+						</h2>
+						{@render memberList(pastMembers)}
+					</div>
+				{:else}
+					<div aria-live="polite">
+						<h2 class="text-foreground-primary mb-2 text-lg font-semibold">
+							<span class="text-foreground-muted">##</span> Høst {selectedYear} – vår {Number(
+								selectedYear
+							) + 1}
+						</h2>
+						<p class="text-foreground-muted mb-4 text-sm">
+							{filteredMembers.length} registrerte medlemmer i løpet av styreåret
+						</p>
+						{#if filteredMembers.length}
+							{@render memberList(filteredMembers)}
+						{:else}
+							<p class="text-foreground-secondary text-sm">
+								Ingen medlemmer er registrert med periode i dette styreåret ennå.
+							</p>
+						{/if}
+					</div>
+				{/if}
 			</div>
 		</div>
 	</div>

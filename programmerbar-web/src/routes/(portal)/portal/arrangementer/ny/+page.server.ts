@@ -5,7 +5,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.user || locals.user.role !== 'board') {
 		throw redirect(303, '/portal');
 	}
-	const users = await locals.userService.findAll().then((users) =>
+	const users = await locals.userService.findAllActiveVolunteers().then((users) =>
 		users.map((user) => ({
 			label: user.name,
 			value: user.id

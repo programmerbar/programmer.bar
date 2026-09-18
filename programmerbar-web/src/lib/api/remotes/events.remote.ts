@@ -7,7 +7,7 @@ import { command, getRequestEvent } from '$app/server';
 export const createEvent = command(CreateEventSchema, async (event) => {
 	const { locals, platform } = getRequestEvent();
 
-	if (!locals.user) {
+	if (locals.user?.role !== 'board') {
 		return {
 			success: false,
 			message: 'Unauthorized'
@@ -15,6 +15,8 @@ export const createEvent = command(CreateEventSchema, async (event) => {
 	}
 
 	const { name, date, slug, description, shifts } = event;
+
+	await locals.eventService.assertActiveVolunteers(shifts.flatMap((shift) => shift.users));
 
 	const createdEvent = await locals.eventService.create(name, date, slug, description);
 	if (!createdEvent) {

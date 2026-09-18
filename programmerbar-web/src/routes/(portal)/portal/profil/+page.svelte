@@ -1,4 +1,5 @@
 <script lang="ts">
+	import UserBadge from '$lib/components/portal/UserBadge.svelte';
 	import Heading from '$lib/components/ui/Heading.svelte';
 	import Pill from '$lib/components/ui/Pill.svelte';
 	import { initials } from '$lib/utils/strings.js';
@@ -27,9 +28,7 @@
 				<div class="min-w-0 flex-1">
 					<Heading class="mb-1 truncate">{user.name}</Heading>
 					<div class="flex items-center gap-3">
-						<Pill variant={user.role === 'board' ? 'purple' : 'blue'}>
-							{user.role === 'board' ? 'Styret' : 'Frivillig'}
-						</Pill>
+						<UserBadge {user} />
 					</div>
 				</div>
 			</div>
@@ -87,9 +86,7 @@
 							>
 								<dt class="mb-1 text-sm font-medium text-gray-500 dark:text-gray-400">Rolle</dt>
 								<dd>
-									<Pill variant={user.role === 'board' ? 'purple' : 'blue'}>
-										{user.role === 'board' ? 'Styret' : 'Frivillig'}
-									</Pill>
+									<UserBadge {user} />
 								</dd>
 							</div>
 							<div

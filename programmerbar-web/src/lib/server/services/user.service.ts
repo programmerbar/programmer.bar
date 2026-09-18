@@ -1,6 +1,6 @@
 import type { Database } from '$lib/server/db/drizzle';
 import { eq, and, not, inArray, or, sql } from 'drizzle-orm';
-import { users, type UserInsert } from '$lib/server/db/schemas';
+import { users, type User, type UserInsert } from '$lib/server/db/schemas';
 
 export class UserService {
 	#db: Database;
@@ -61,7 +61,13 @@ export class UserService {
 		return users;
 	}
 
-	async updateUserRole(userId: string, role: 'board' | 'normal') {
+	async findAllActiveVolunteers() {
+		return await this.#db.query.users.findMany({
+			where: (row, { and, ne, not }) => and(ne(row.role, 'inactive'), not(row.isDeleted))
+		});
+	}
+
+	async updateUserRole(userId: string, role: User['role']) {
 		const updatedUser = await this.#db
 			.update(users)
 			.set({ role })

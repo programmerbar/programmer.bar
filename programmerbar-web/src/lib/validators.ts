@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { zfd } from 'zod-form-data';
 
+export const UserRoleSchema = z.enum(['board', 'normal', 'inactive']);
+
 export const CreateEventSchema = z.object({
 	name: z.string(),
 	date: z.coerce.date(),

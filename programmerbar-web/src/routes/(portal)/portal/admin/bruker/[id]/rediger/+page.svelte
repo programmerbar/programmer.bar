@@ -1,9 +1,10 @@
 <script lang="ts">
+	import { USER_ROLE_OPTIONS } from '$lib/utils/user-presentation';
+	import UserBadge from '$lib/components/portal/UserBadge.svelte';
 	import Heading from '$lib/components/ui/Heading.svelte';
 	import Input from '$lib/components/ui/Input.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import ButtonLink from '$lib/components/ui/ButtonLink.svelte';
-	import Pill from '$lib/components/ui/Pill.svelte';
 	import { initials } from '$lib/utils/strings.js';
 	import { enhance } from '$app/forms';
 	import { ArrowLeft, UserCog } from '@lucide/svelte';
@@ -74,10 +75,8 @@
 			</div>
 			<div class="min-w-0 flex-1">
 				<Heading class="mb-1 truncate">{user.name}</Heading>
-				<div class="flex items-center gap-3">
-					<Pill variant={user.role === 'board' ? 'purple' : 'blue'}>
-						{user.role === 'board' ? 'Styret' : 'Frivillig'}
-					</Pill>
+				<div class="flex flex-wrap items-center gap-3">
+					<UserBadge {user} />
 				</div>
 			</div>
 		</div>
@@ -142,38 +141,22 @@
 						class="dark:border-portal-border dark:bg-portal-hover rounded-lg border border-gray-200 bg-white p-4"
 					>
 						<div class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200">Rolle</div>
-						<div class="flex items-center gap-3">
-							<label class="flex cursor-pointer items-center">
-								<input
-									type="radio"
-									name="role"
-									value="normal"
-									class="peer sr-only"
-									bind:group={editForm.role}
-								/>
-								<div
-									class="dark:border-portal-border dark:hover:bg-portal-hover flex items-center justify-center rounded-lg border px-4 py-2 text-sm transition-colors peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 hover:bg-gray-50 dark:text-gray-300 dark:peer-checked:border-blue-400 dark:peer-checked:bg-blue-950/50 dark:peer-checked:text-blue-300"
-								>
-									Frivillig
-								</div>
-							</label>
-
-							<label class="flex cursor-pointer items-center">
-								<input
-									type="radio"
-									name="role"
-									value="board"
-									class="peer sr-only"
-									bind:group={editForm.role}
-								/>
-								<div
-									class="dark:border-portal-border dark:hover:bg-portal-hover flex items-center justify-center rounded-lg border px-4 py-2 text-sm transition-colors peer-checked:border-purple-500 peer-checked:bg-purple-50 peer-checked:text-purple-700 hover:bg-gray-50 dark:text-gray-300 dark:peer-checked:border-purple-400 dark:peer-checked:bg-purple-950/50 dark:peer-checked:text-purple-300"
-								>
-									Styret
-								</div>
-							</label>
+						<div class="flex flex-wrap items-center gap-3">
+							{#each USER_ROLE_OPTIONS as role (role.value)}
+								<label class="flex cursor-pointer items-center gap-2">
+									<input type="radio" name="role" value={role.value} bind:group={editForm.role} />
+									{role.label}
+								</label>
+							{/each}
 						</div>
 					</div>
+				</div>
+
+				<div class="space-y-2">
+					<p class="text-sm text-gray-500 dark:text-gray-400">
+						Inaktive kan fortsatt logge inn og bruke bongene sine, men kan ikke legges til på nye
+						vakter og har ikke administratortilgang.
+					</p>
 				</div>
 
 				<!-- Can Refer Setting -->
@@ -193,6 +176,7 @@
 							<input
 								type="checkbox"
 								name="canRefer"
+								value="true"
 								bind:checked={editForm.canRefer}
 								class="dark:border-portal-border dark:bg-portal-hover h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:checked:bg-blue-600 dark:focus:ring-blue-500"
 							/>

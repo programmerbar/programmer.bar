@@ -45,8 +45,8 @@ export class EventService {
 		const ids = [...new Set(userIds)];
 		if (ids.length === 0) return;
 		const eligible = await this.#db.query.users.findMany({
-			where: (row, { and, inArray, eq, not }) =>
-				and(inArray(row.id, ids), eq(row.isActive, true), not(row.isDeleted)),
+			where: (row, { and, inArray, ne, not }) =>
+				and(inArray(row.id, ids), ne(row.role, 'inactive'), not(row.isDeleted)),
 			columns: { id: true }
 		});
 		if (eligible.length !== ids.length) {

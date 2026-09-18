@@ -9,13 +9,9 @@ type Presentation = {
 
 export const USER_ROLES = {
 	normal: { label: 'Frivillig', pluralLabel: 'Frivillige', variant: 'blue' },
-	board: { label: 'Styret', pluralLabel: 'Styret', variant: 'purple' }
+	board: { label: 'Styret', pluralLabel: 'Styret', variant: 'purple' },
+	inactive: { label: 'Inaktiv', pluralLabel: 'Inaktive', variant: 'gray' }
 } as const satisfies Record<User['role'], Presentation & { pluralLabel: string }>;
-
-export const VOLUNTEER_STATUS = {
-	active: { label: 'Aktiv frivillig', variant: 'green' },
-	inactive: { label: 'Inaktiv', variant: 'gray' }
-} as const satisfies Record<'active' | 'inactive', Presentation>;
 
 export const USER_ROLE_OPTIONS = Object.entries(USER_ROLES).map(([value, role]) => ({
 	value: value as User['role'],
@@ -27,7 +23,6 @@ export const USER_ROLE_FILTER_OPTIONS = USER_ROLE_OPTIONS.map(({ value }) => ({
 	label: USER_ROLES[value].pluralLabel
 }));
 
-/** Inactive status takes precedence over the role in user summaries. */
-export function getUserPresentation(user: Pick<User, 'role' | 'isActive'>): Presentation {
-	return user.isActive ? USER_ROLES[user.role] : VOLUNTEER_STATUS.inactive;
+export function getUserPresentation(user: Pick<User, 'role'>): Presentation {
+	return USER_ROLES[user.role];
 }

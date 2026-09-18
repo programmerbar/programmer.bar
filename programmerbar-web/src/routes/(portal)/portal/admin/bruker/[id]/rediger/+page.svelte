@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { USER_ROLE_OPTIONS, VOLUNTEER_STATUS } from '$lib/utils/user-presentation';
+	import { USER_ROLE_OPTIONS } from '$lib/utils/user-presentation';
 	import UserBadge from '$lib/components/portal/UserBadge.svelte';
 	import Heading from '$lib/components/ui/Heading.svelte';
 	import Input from '$lib/components/ui/Input.svelte';
@@ -16,14 +16,12 @@
 	let user = $derived(data.user as User);
 
 	let editForm = $state({
-		isActive: user.isActive,
 		role: user.role,
 		phone: user.phone || '',
 		canRefer: user.canRefer ?? true
 	});
 
 	$effect(() => {
-		editForm.isActive = data.user.isActive;
 		editForm.role = data.user.role;
 		editForm.phone = data.user.phone || '';
 		editForm.canRefer = data.user.canRefer ?? true;
@@ -77,7 +75,7 @@
 			</div>
 			<div class="min-w-0 flex-1">
 				<Heading class="mb-1 truncate">{user.name}</Heading>
-				<div class="flex items-center gap-3">
+				<div class="flex flex-wrap items-center gap-3">
 					<UserBadge {user} />
 				</div>
 			</div>
@@ -143,7 +141,7 @@
 						class="dark:border-portal-border dark:bg-portal-hover rounded-lg border border-gray-200 bg-white p-4"
 					>
 						<div class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200">Rolle</div>
-						<div class="flex items-center gap-3">
+						<div class="flex flex-wrap items-center gap-3">
 							{#each USER_ROLE_OPTIONS as role (role.value)}
 								<label class="flex cursor-pointer items-center gap-2">
 									<input type="radio" name="role" value={role.value} bind:group={editForm.role} />
@@ -155,14 +153,9 @@
 				</div>
 
 				<div class="space-y-2">
-					<label class="flex items-center gap-2">
-						<input type="checkbox" bind:checked={editForm.isActive} />
-						{VOLUNTEER_STATUS.active.label}
-					</label>
-					<input type="hidden" name="isActive" value={String(editForm.isActive)} />
 					<p class="text-sm text-gray-500 dark:text-gray-400">
 						Inaktive kan fortsatt logge inn og bruke bongene sine, men kan ikke legges til på nye
-						vakter.
+						vakter og har ikke administratortilgang.
 					</p>
 				</div>
 

@@ -3,7 +3,7 @@
 	import { getUserPresentation } from '$lib/utils/user-presentation';
 	import type { User } from '$lib/server/db/schemas';
 
-	let { user }: { user: Pick<User, 'role' | 'isActive'> } = $props();
+	let { user }: { user: Pick<User, 'role'> } = $props();
 	const presentation = $derived(getUserPresentation(user));
 </script>
 

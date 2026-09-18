@@ -14,44 +14,51 @@
 		{ name: 'Eivind D. Halderaker', role: 'Co-founder' }
 	];
 
-	const members = [
-		'Erik Fjelltveit Nyhuus',
-		'Lene Soltveit',
-		'Steffen Andre Pettersen',
-		'Siren Bjorøy',
-		'Ole Straumland',
-		'Tony Lam',
-		'Eirik Rekve Thorsheim',
-		'Ole Magnus Fon Johnsen',
-		'August Ebne Røeggen',
-		'Fredrik Hast Sørli',
-		'Sturla Rognskog Mella',
-		'Tord Vikøren Vikestad',
-		'Henrik Sætre Breivik'
+	type Member = { name: string; role?: string; start?: string; end?: string };
+
+	const members: Member[] = [
+		{ name: 'Erik Fjelltveit Nyhuus' },
+		{ name: 'Steffen Andre Pettersen' },
+		{ name: 'Siren Bjorøy' },
+		{ name: 'Ole Straumland' },
+		{ name: 'August Ebne Røeggen' },
+		{ name: 'Sturla Rognskog Mella', start: 'Høst 2025' },
+		{ name: 'Tord Vikøren Vikestad', start: 'Høst 2025' },
+		{ name: 'Henrik Sætre Breivik', start: 'Høst 2025' },
+		{ name: 'Anna Sviland', start: 'Høst 2026' },
+		{ name: 'Anna Valencia Fari', start: 'Høst 2026' },
+		{ name: 'Oddmund Gullbrå Steinsland', start: 'Høst 2026' },
+		{ name: 'Maya Shantseva', start: 'Høst 2026' },
+		{ name: 'Torjus Berntsen', start: 'Høst 2026' }
 	];
 
-	const pastMembers = [
-		'Mina Tolfsen',
-		'Ask Rud Persson',
-		'Palma Rud Persson',
-		'Sigurd Johnsen Setså',
-		'Erlend Raa Vågset',
-		'Sofia Hestenes Eika',
-		'Kristoffer Borg Nilsen',
-		'Lars Lismoen',
-		'Yoeri Otten',
-		'Eirik Øygard',
-		'Arne Natskår',
-		'Alexander Alf Iversen',
-		'Henrik Trondseth',
-		'Emil Johannessen',
-		'Andre Normann',
-		'Sofie Nhu Nguyen',
-		'Simen Hauge Østbø',
-		'Stian Munkejord',
-		'Gard Heine Kalland',
-		'Lars Bysheim',
-		'Lars Haukland'
+	const pastMembers: Member[] = [
+		{ name: 'Mina Tolfsen' },
+		{ name: 'Ask Rud Persson' },
+		{ name: 'Palma Rud Persson' },
+		{ name: 'Sigurd Johnsen Setså' },
+		{ name: 'Erlend Raa Vågset' },
+		{ name: 'Sofia Hestenes Eika' },
+		{ name: 'Kristoffer Borg Nilsen' },
+		{ name: 'Lars Lismoen' },
+		{ name: 'Yoeri Otten' },
+		{ name: 'Eirik Øygard' },
+		{ name: 'Arne Natskår' },
+		{ name: 'Alexander Alf Iversen' },
+		{ name: 'Henrik Trondseth' },
+		{ name: 'Emil Johannessen' },
+		{ name: 'Andre Normann' },
+		{ name: 'Sofie Nhu Nguyen' },
+		{ name: 'Simen Hauge Østbø' },
+		{ name: 'Stian Munkejord' },
+		{ name: 'Gard Heine Kalland' },
+		{ name: 'Lars Bysheim' },
+		{ name: 'Lars Haukland' },
+		{ name: 'Eirik Rekve Thorsheim' },
+		{ name: 'Tony Bao Lam', role: 'Innkjøp', end: 'Vår 2026' },
+		{ name: 'Lene Soltveit', role: 'Økonomiansvarlig', end: 'Vår 2026' },
+		{ name: 'Ole Magnus Fon Johnsen', role: 'Webansvarlig', end: 'Vår 2026' },
+		{ name: 'Fredrik Hast Sørli', role: 'Økonomiassistent', start: 'Høst 2025', end: 'Vår 2026' }
 	];
 </script>
 
@@ -85,8 +92,8 @@
 					<ul class="space-y-2">
 						{#each coFounders as founder (founder.name)}
 							<li class="border-primary border-l-4 pl-4">
-								{founder.name}
-								<span class="text-foreground-muted">({founder.role})</span>
+								<span class="block">{founder.name}</span>
+								<span class="text-foreground-muted mt-0.5 block text-sm">{founder.role}</span>
 							</li>
 						{/each}
 					</ul>
@@ -98,9 +105,13 @@
 						<span class="text-foreground-muted">##</span> Styremedlemmer
 					</h2>
 					<ul class="space-y-2">
-						{#each members as member (member)}
+						{#each members as member (member.name)}
 							<li class="border-primary border-l-4 pl-4">
-								{member}
+								<span class="block">{member.name}</span>
+								{#if member.start}
+									<span class="text-foreground-muted mt-0.5 block text-sm">{member.start} – nå</span
+									>
+								{/if}
 							</li>
 						{/each}
 					</ul>
@@ -112,9 +123,21 @@
 						<span class="text-foreground-muted">##</span> Tidligere Styremedlemmer
 					</h2>
 					<ul class="space-y-2">
-						{#each pastMembers as member (member)}
+						{#each pastMembers as member (member.name)}
 							<li class="border-primary border-l-4 pl-4">
-								{member}
+								<span class="block">{member.name}</span>
+								{#if member.role}
+									<span class="text-foreground-muted mt-0.5 block text-sm">{member.role}</span>
+								{/if}
+								{#if member.end}
+									<span class="text-foreground-muted mt-0.5 block text-xs">
+										{#if member.start}
+											{member.start} – {member.end.toLowerCase()}
+										{:else}
+											Til og med {member.end.toLowerCase()}
+										{/if}
+									</span>
+								{/if}
 							</li>
 						{/each}
 					</ul>

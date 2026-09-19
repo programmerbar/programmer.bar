@@ -1,4 +1,5 @@
 export * from './claimed-credit';
+export * from './board-members';
 export * from './contact-submissions';
 export * from './events';
 export * from './invitations';

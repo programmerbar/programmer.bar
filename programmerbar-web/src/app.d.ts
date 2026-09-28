@@ -19,6 +19,7 @@ declare global {
 			feideProvider: import('$lib/server/auth/feide').FeideProvider;
 
 			// Serivces
+			boardHistoryService: import('$lib/server/services/board-history.service').BoardHistoryService;
 			emailService: import('$lib/server/services/email.service').EmailService;
 			statusService: import('$lib/server/services/status.service').StatusService;
 			rateLimitService: import('$lib/server/services/rate-limit.service').RateLimitService;

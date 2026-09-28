@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Beer, Lock, Users, Loader } from '@lucide/svelte';
+	import { Beer, Lock, Users, Loader, Clock } from '@lucide/svelte';
 	import { cn } from '$lib/utils/cn.js';
 	import { enhance } from '$app/forms';
 
@@ -8,6 +8,13 @@
 	let newStatus = $state(data.status);
 
 	const statusButtons = [
+		{
+			status: -1,
+			Icon: Clock,
+			label: 'Automatisk',
+			description: 'Åpent fra første vakt starter til siste vakt slutter i hvert arrangement',
+			color: 'green'
+		},
 		{
 			status: 1,
 			Icon: Beer,
@@ -40,6 +47,9 @@
 	<div class="text-center">
 		<h1 class="mb-2 text-2xl font-bold text-gray-800 dark:text-gray-100">Barstatus</h1>
 		<p class="text-gray-600 dark:text-gray-300">Velg gjeldende status for baren</p>
+		<p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+			Automatisk følger vakttidene i portalen. Manuelle valg gjelder til du velger automatisk igjen.
+		</p>
 	</div>
 
 	<div class="space-y-3">

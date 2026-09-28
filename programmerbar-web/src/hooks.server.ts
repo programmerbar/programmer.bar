@@ -1,4 +1,5 @@
 import { createAuth } from '$lib/server/auth/lucia';
+import { BoardHistoryService } from '$lib/server/services/board-history.service';
 import { FeideProvider } from '$lib/server/auth/feide';
 import { createDatabase } from '$lib/server/db/drizzle';
 import { BanService } from '$lib/server/services/ban.service';
@@ -50,6 +51,7 @@ const setup: Handle = async ({ event, resolve }) => {
 	// Setup database
 	const db = createDatabase(DB);
 	event.locals.db = db;
+	event.locals.boardHistoryService = new BoardHistoryService(db);
 
 	// Setup auth
 	const auth = createAuth(db);
@@ -64,7 +66,7 @@ const setup: Handle = async ({ event, resolve }) => {
 	event.locals.feideProvider = feideProvider;
 
 	// Setup services
-	event.locals.statusService = new StatusService(STATUS_KV);
+	event.locals.statusService = new StatusService(STATUS_KV, db);
 	event.locals.rateLimitService = new RateLimitService(STATUS_KV);
 	event.locals.magicLinkService = new MagicLinkService(STATUS_KV);
 	event.locals.emailService = new EmailService(sendEmail);

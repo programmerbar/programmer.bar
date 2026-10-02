@@ -8,7 +8,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		throw error(404, 'Event not found');
 	}
 
-	const users = await locals.userService.findAll().then((users) =>
+	const users = await locals.userService.findAllActiveVolunteers().then((users) =>
 		users.map((user) => ({
 			label: user.name,
 			value: user.id
@@ -38,6 +38,23 @@ export const actions: Actions = {
 
 		const formData = await request.formData();
 		const eventId = params.id;
+
+		const originalEvent = await locals.eventService.findFullEventById(eventId);
+		if (!originalEvent) return fail(404, { message: 'Event not found' });
+		const addedUserIds: string[] = [];
+		const count = Number(formData.get('shiftsCount') || 0);
+		for (let i = 0; i < count; i++) {
+			const shiftId = formData.get(`shift[${i}].id`)?.toString();
+			const existing = originalEvent.shifts.find((shift) => shift.id === shiftId);
+			const userCount = Number(formData.get(`shift[${i}].userCount`) || 0);
+			for (let j = 0; j < userCount; j++) {
+				const userId = formData.get(`shift[${i}].user[${j}].id`)?.toString();
+				if (userId?.trim() && !existing?.members.some((member) => member.user.id === userId)) {
+					addedUserIds.push(userId);
+				}
+			}
+		}
+		await locals.eventService.assertActiveVolunteers(addedUserIds);
 
 		const shouldBePublic = formData.get('shouldBePublic') === 'true';
 

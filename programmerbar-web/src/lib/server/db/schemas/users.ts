@@ -13,7 +13,7 @@ export const users = sqliteTable(
 		name: text().notNull(),
 		email: text().notNull(),
 		feideId: text(),
-		role: text({ enum: ['board', 'normal'] })
+		role: text({ enum: ['board', 'normal', 'inactive'] })
 			.notNull()
 			.default('normal'),
 		additionalBeers: integer().default(0).notNull(),

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import UserBadge from './UserBadge.svelte';
 	import { initials, mailto } from '$lib/utils/strings';
 	import type { User } from '$lib/server/db/schemas';
 	import { cn } from '$lib/utils/cn';
@@ -47,19 +48,7 @@
 	<div>
 		<p class="text-center font-medium dark:text-gray-100">{user.name}</p>
 		<p class="mt-1 text-center text-sm">
-			{#if user.role === 'board'}
-				<span
-					class="inline-block rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800 dark:bg-blue-900 dark:text-blue-300"
-				>
-					Styret
-				</span>
-			{:else}
-				<span
-					class="dark:bg-portal-hover inline-block rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-800 dark:text-gray-300"
-				>
-					Frivillig
-				</span>
-			{/if}
+			<UserBadge {user} />
 		</p>
 		<p class="mt-1 text-center text-sm">
 			<!-- eslint-disable svelte/no-navigation-without-resolve -->

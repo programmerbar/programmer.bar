@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { getUserPresentation } from '$lib/utils/user-presentation';
 	import logo from '$lib/assets/programmerbar-modern.svg';
 	import {
 		House,
@@ -304,7 +305,7 @@
 						{user.current?.name}
 					</p>
 					<p class="truncate text-xs text-gray-500 dark:text-gray-400">
-						{user.current?.role === 'board' ? 'Styret' : 'Frivillig'}
+						{user.current ? getUserPresentation(user.current).label : ''}
 					</p>
 				</div>
 			</div>

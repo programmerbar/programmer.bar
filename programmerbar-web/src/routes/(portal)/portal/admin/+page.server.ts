@@ -1,3 +1,4 @@
+import { UserRoleSchema } from '$lib/validators';
 import { isTrainingComplete } from '$lib/utils/training';
 import { redirect, fail, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
@@ -47,9 +48,9 @@ export const actions: Actions = {
 	updateRole: async ({ request, locals }) => {
 		const formData = await request.formData();
 		const userId = formData.get('userId') as string;
-		const role = formData.get('role');
+		const role = UserRoleSchema.safeParse(formData.get('role'));
 
-		if (typeof role !== 'string' || (role !== 'board' && role !== 'normal')) {
+		if (!role.success) {
 			return fail(400, { error: 'Invalid role specified' });
 		}
 
@@ -57,7 +58,7 @@ export const actions: Actions = {
 			return fail(401, { error: 'Unauthorized' });
 		}
 
-		const success = await locals.userService.updateUserRole(userId, role);
+		const success = await locals.userService.updateUserRole(userId, role.data);
 
 		if (success) {
 			return { success: true };

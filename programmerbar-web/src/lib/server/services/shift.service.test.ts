@@ -48,6 +48,43 @@ describe('shift planning persistence', () => {
 	});
 	afterEach(() => sqlite.close());
 
+	it('keeps separate registrations apart and supports deleting one day or the remaining group', async () => {
+		await service.addAbsences(
+			'a',
+			[period, { startAt: new Date('2026-10-16T16:00Z'), endAt: new Date('2026-10-16T20:00Z') }],
+			'Fridays'
+		);
+		await service.addAbsences('a', [period], 'Another registration');
+		await service.addAbsence('a', period);
+		const rows = await service.findAbsences('a');
+		const group = rows.filter((row) => row.groupLabel === 'Fridays');
+		expect(group).toHaveLength(2);
+		expect(group[0].groupId).toBeTruthy();
+		expect(group[0].groupId).toBe(group[1].groupId);
+		expect(await service.deleteAbsenceGroup('b', group[0].groupId!)).toEqual([]);
+		await service.deleteAbsence('a', group[0].id);
+		expect(
+			(await service.findAbsences('a')).filter((row) => row.groupId === group[0].groupId)
+		).toHaveLength(1);
+		expect(await service.deleteAbsenceGroup('a', group[0].groupId!)).toHaveLength(1);
+		const remaining = await service.findAbsences('a');
+		expect(remaining).toHaveLength(2);
+		expect(remaining.some((row) => row.groupLabel === 'Another registration')).toBe(true);
+		expect(remaining.some((row) => row.groupId === null)).toBe(true);
+		expect(await service.deleteAbsenceGroup('a', group[0].groupId!)).toEqual([]);
+	});
+
+	it('bulk deletes only selected periods owned by the caller, including legacy entries', async () => {
+		await service.addAbsence('a', period);
+		await service.addAbsence('a', period);
+		await service.addAbsence('b', period);
+		const own = await service.findAbsences('a');
+		const [other] = await service.findAbsences('b');
+		expect(await service.deleteAbsences('a', [own[0].id, other.id, own[0].id])).toHaveLength(1);
+		expect(await service.findAbsences('a')).toEqual([own[1]]);
+		expect(await service.findAbsences('b')).toEqual([other]);
+	});
+
 	it('saves a large recurring selection in bounded statements and reports assigned shift conflicts', async () => {
 		seedAssignments();
 		const periods = Array.from({ length: 60 }, (_, index) => ({
@@ -55,7 +92,9 @@ describe('shift planning persistence', () => {
 			endAt: new Date(period.endAt.getTime() + index * 86400000)
 		}));
 		expect(await service.addAbsences('a', periods)).toBe(true);
-		expect(await service.findAbsences('a')).toHaveLength(60);
+		const stored = await service.findAbsences('a');
+		expect(stored).toHaveLength(60);
+		expect(new Set(stored.map((row) => row.groupId)).size).toBe(1);
 		expect(await service.findAbsences('b')).toEqual([]);
 	});
 

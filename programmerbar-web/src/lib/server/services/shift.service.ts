@@ -3,6 +3,7 @@ import { events, shifts, userShifts, unavailability, users } from '../db/schemas
 import { findPlanningConflict, overlaps, type PlannedShift } from '../../shift-planning';
 import { error } from '@sveltejs/kit';
 import { eq, and, lte, gte, inArray, asc } from 'drizzle-orm';
+import { nanoid } from 'nanoid';
 
 export class ShiftService {
 	#db: Database;
@@ -70,21 +71,49 @@ export class ShiftService {
 			.returning();
 	}
 
-	async addAbsences(userId: string, periods: { startAt: Date; endAt: Date }[]) {
+	async addAbsences(
+		userId: string,
+		periods: { startAt: Date; endAt: Date }[],
+		groupLabel = 'Faste ukedager'
+	) {
 		if (!periods.length) return false;
 		const assigned = await this.#db
 			.select({ startAt: shifts.startAt, endAt: shifts.endAt })
 			.from(userShifts)
 			.innerJoin(shifts, eq(shifts.id, userShifts.shiftId))
 			.where(and(eq(userShifts.userId, userId), eq(userShifts.status, 'accepted')));
+		const groupId = nanoid();
 		const insertChunk = (chunk: typeof periods) =>
-			this.#db.insert(unavailability).values(chunk.map((period) => ({ userId, ...period })));
+			this.#db
+				.insert(unavailability)
+				.values(chunk.map((period) => ({ userId, ...period, groupId, groupLabel })));
 		// Keep each statement below D1's parameter limit. The batch is atomic.
-		const first = insertChunk(periods.slice(0, 20));
+		const first = insertChunk(periods.slice(0, 16));
 		const rest = [];
-		for (let i = 20; i < periods.length; i += 20) rest.push(insertChunk(periods.slice(i, i + 20)));
+		for (let i = 16; i < periods.length; i += 16) rest.push(insertChunk(periods.slice(i, i + 16)));
 		await this.#db.batch([first, ...rest]);
 		return assigned.some((shift) => periods.some((period) => overlaps(shift, period)));
+	}
+
+	async deleteAbsenceGroup(userId: string, groupId: string) {
+		return this.#db
+			.delete(unavailability)
+			.where(and(eq(unavailability.userId, userId), eq(unavailability.groupId, groupId)))
+			.returning();
+	}
+
+	async deleteAbsences(userId: string, ids: string[]) {
+		const uniqueIds = [...new Set(ids)];
+		if (!uniqueIds.length) return [];
+		const deletion = (chunk: string[]) =>
+			this.#db
+				.delete(unavailability)
+				.where(and(eq(unavailability.userId, userId), inArray(unavailability.id, chunk)))
+				.returning();
+		const first = deletion(uniqueIds.slice(0, 80));
+		const rest = [];
+		for (let i = 80; i < uniqueIds.length; i += 80) rest.push(deletion(uniqueIds.slice(i, i + 80)));
+		return (await this.#db.batch([first, ...rest])).flat();
 	}
 
 	async findCompletedShiftsByUserId(userId: string) {

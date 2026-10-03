@@ -11,7 +11,9 @@ export const unavailability = sqliteTable(
 			.notNull()
 			.references(() => users.id, { onDelete: 'cascade' }),
 		startAt: integer({ mode: 'timestamp' }).notNull(),
-		endAt: integer({ mode: 'timestamp' }).notNull()
+		endAt: integer({ mode: 'timestamp' }).notNull(),
+		groupId: text(),
+		groupLabel: text()
 	},
 	(table) => [
 		index('unavailability_user_id_idx').on(table.userId),

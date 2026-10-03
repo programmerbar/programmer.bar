@@ -3,6 +3,7 @@
 	import Heading from '$lib/components/ui/Heading.svelte';
 	import Input from '$lib/components/ui/Input.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
+	import { checkboxClass } from '$lib/components/styles/checkbox';
 	import { normalDate, formatDate, parseDateTimeLocal } from '$lib/utils/date';
 	import { recurringPeriods, recurringAvailabilitySchema } from '$lib/availability-periods';
 	let { data, form } = $props();
@@ -12,6 +13,12 @@
 	let allDay = $state(true);
 	let weekdays = $state<string[]>([]);
 	let saving = $state(false);
+	let selectedIds = $state<string[]>([]);
+	const selected = $derived(
+		selectedIds.filter((id) =>
+			data.groups.some((group) => !group.groupId && group.periods[0].id === id)
+		)
+	);
 	const days = [
 		{ value: '1', label: 'Mandag' },
 		{ value: '2', label: 'Tirsdag' },
@@ -98,6 +105,7 @@
 							<label class="flex items-center gap-2"
 								><input
 									type="checkbox"
+									class={checkboxClass}
 									name="weekdays"
 									value={day.value}
 									bind:group={weekdays}
@@ -124,7 +132,7 @@
 				{/if}
 			{:else}
 				<label class="flex items-center gap-2"
-					><input type="checkbox" bind:checked={allDay} />Hele dager</label
+					><input type="checkbox" class={checkboxClass} bind:checked={allDay} />Hele dager</label
 				>
 				<input type="hidden" name="allDay" value={String(allDay)} />
 				{#if !allDay}
@@ -149,15 +157,71 @@
 		</fieldset>
 	</form>
 	<Heading level={2}>Registrerte perioder</Heading>
-	{#each data.absences as absence (absence.id)}
-		<div
-			class="bg-portal-card flex flex-wrap items-center justify-between gap-4 rounded-lg border p-4"
-		>
-			<p>{normalDate(absence.startAt)} – {normalDate(absence.endAt)}</p>
-			<form method="post" action="?/delete" use:enhance>
-				<input type="hidden" name="id" value={absence.id} />
-				<Button type="submit" intent="danger" size="sm">Slett</Button>
-			</form>
-		</div>
+	{#if selected.length}
+		<form method="post" action="?/deleteSelected" use:enhance class="flex items-center gap-3">
+			{#each selected as id (id)}<input type="hidden" name="ids" value={id} />{/each}
+			<Button type="submit" intent="danger" size="sm">Slett valgte ({selected.length})</Button>
+			<Button type="button" intent="outline" size="sm" onclick={() => (selectedIds = [])}
+				>Opphev valg</Button
+			>
+		</form>
+	{/if}
+	{#each data.groups as group (group.key)}
+		{#if group.groupId}
+			<div class="bg-portal-card border-portal-border rounded-lg border p-4">
+				<div class="flex flex-wrap items-center justify-between gap-4">
+					<div>
+						<h3 class="font-medium">{group.label ?? 'Faste ukedager'}</h3>
+						<p class="text-sm text-gray-500 dark:text-gray-400">
+							{group.periods.length} dager registrert
+						</p>
+					</div>
+					<form method="post" action="?/deleteGroup" use:enhance>
+						<input type="hidden" name="groupId" value={group.groupId} />
+						<Button type="submit" intent="danger" size="sm">Slett hele registreringen</Button>
+					</form>
+				</div>
+				<details class="mt-3">
+					<summary class="cursor-pointer text-sm font-medium">Vis dager / fjern enkeltdager</summary
+					>
+					<ul class="divide-portal-border mt-2 divide-y">
+						{#each group.periods as absence (absence.id)}
+							<li class="flex flex-wrap items-center justify-between gap-3 py-3">
+								<span>{formatDate(absence.startAt)}</span>
+								<form method="post" action="?/delete" use:enhance>
+									<input type="hidden" name="id" value={absence.id} />
+									<Button
+										type="submit"
+										intent="outline"
+										size="sm"
+										aria-label={`Fjern ${formatDate(absence.startAt)}`}>Fjern denne dagen</Button
+									>
+								</form>
+							</li>
+						{/each}
+					</ul>
+				</details>
+			</div>
+		{:else}
+			{@const absence = group.periods[0]}
+			<div
+				class="bg-portal-card flex flex-wrap items-center justify-between gap-4 rounded-lg border p-4"
+			>
+				<label class="flex items-center gap-3">
+					<input
+						type="checkbox"
+						class={checkboxClass}
+						value={absence.id}
+						bind:group={selectedIds}
+						aria-label={`Velg perioden ${normalDate(absence.startAt)} – ${normalDate(absence.endAt)}`}
+					/>
+					<span>{normalDate(absence.startAt)} – {normalDate(absence.endAt)}</span>
+				</label>
+				<form method="post" action="?/delete" use:enhance>
+					<input type="hidden" name="id" value={absence.id} />
+					<Button type="submit" intent="danger" size="sm">Slett</Button>
+				</form>
+			</div>
+		{/if}
 	{:else}<p>Du har ikke registrert noen perioder du ikke kan stå.</p>{/each}
 </section>

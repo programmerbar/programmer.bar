@@ -7,6 +7,24 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@layer base {
+	#portal-layout
+		:is(
+			button,
+			select,
+			summary,
+			[role='button'],
+			input[type='checkbox'],
+			input[type='radio'],
+			input[type='submit']
+		) {
+		cursor: pointer;
+	}
+	#portal-layout :is(:disabled, [aria-disabled='true']) {
+		cursor: not-allowed;
+	}
+}
+
 :root {
 	--background: #f5f5f5;
 	--foreground: #262626;

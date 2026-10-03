@@ -10,7 +10,7 @@
 	import ButtonLink from '$lib/components/ui/ButtonLink.svelte';
 	import { cn } from '$lib/utils/cn';
 
-	let { data } = $props();
+	let { data, form } = $props();
 	let user = getUser();
 	let activeTab = $state('details');
 	let isPastEvent = $derived(new Date() > new Date(data.event.date));
@@ -24,6 +24,7 @@
 </svelte:head>
 
 <section class="space-y-10">
+	{#if form?.message}<p role="alert" class="rounded-lg border p-4">{form.message}</p>{/if}
 	<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 		<div class="space-y-2">
 			<ButtonLink

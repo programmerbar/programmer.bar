@@ -8,6 +8,7 @@ export * from './push-subscriptions';
 export * from './sessions';
 export * from './shifts';
 export * from './user-shifts';
+export * from './unavailability';
 export * from './users';
 export * from './producers';
 export * from './product-types';

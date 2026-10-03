@@ -1,4 +1,6 @@
 <script lang="ts">
+	import ShiftRecommendations from '$lib/components/portal/ShiftRecommendations.svelte';
+	import { invalidateAll } from '$app/navigation';
 	import type { EventHandler } from 'svelte/elements';
 	import { X, Plus, Save, Clock } from '@lucide/svelte';
 	import Heading from '$lib/components/ui/Heading.svelte';
@@ -40,13 +42,14 @@
 		successMessage = '';
 
 		try {
-			const { success } = await createEvent(createEventState.json());
+			const result = await createEvent(createEventState.json());
 
-			if (success) {
+			if (result.success) {
 				successMessage = 'Arrangement opprettet! E-post er sendt.';
 				createEventState.reset();
+				await invalidateAll();
 			} else {
-				error = 'Noe gikk galt ved oppretting av arrangement';
+				error = result.message ?? 'Noe gikk galt ved oppretting av arrangement';
 			}
 		} catch (err) {
 			error = 'Server error';
@@ -265,12 +268,20 @@
 									class="w-full sm:w-auto"
 								>
 									<Plus size={14} class="mr-1" />
-									Legg til ansvarlig
+									Velg manuelt
 								</Button>
 							</div>
 
+							<ShiftRecommendations
+								planning={data.planning}
+								drafts={createEventState.shifts}
+								index={i}
+								onselect={(user) => {
+									shift.users.push(user);
+								}}
+							/>
 							<div class="mt-4 space-y-3">
-								{#each createEventState.shifts[i].users as user, j (user.id)}
+								{#each createEventState.shifts[i].users as user, j (j)}
 									<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
 										<Combobox
 											type="single"

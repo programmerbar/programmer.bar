@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 
 export const buttonVariant = cva(
-	'flex items-center justify-center border rounded-lg font-medium transition-all ',
+	'flex cursor-pointer items-center justify-center border rounded-lg font-medium transition-all disabled:cursor-not-allowed aria-disabled:cursor-not-allowed ',
 	{
 		variants: {
 			intent: {

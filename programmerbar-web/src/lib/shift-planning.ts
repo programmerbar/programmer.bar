@@ -42,8 +42,8 @@ export function shiftStatistics(userId: string, assignments: Assignment[], now: 
 	};
 }
 
-// Lower scores are preferred. A nearby assignment adds up to four shifts of weight,
-// tapering to zero after 14 days. Planned assignments count toward the workload too.
+// Completed shifts come first, then distance to the nearest past or planned shift.
+// Both criteria use the target semester; saved random draws break remaining ties.
 export function rankVolunteers(
 	volunteers: Volunteer[],
 	assignments: Assignment[],
@@ -74,17 +74,22 @@ export function rankVolunteers(
 					),
 				Infinity
 			);
-			const recentPenalty = 4 * Math.max(0, 1 - distance / fortnight);
 			return {
 				...user,
 				...shiftStatistics(user.id, semesterAssignments, now),
 				unavailable,
 				busy,
 				recent: distance < fortnight,
-				score: semesterOwn.length + recentPenalty
+				nearestShiftDistance: distance
 			};
 		})
-		.sort((a, b) => a.score - b.score || (a.tieBreaker ?? 0) - (b.tieBreaker ?? 0));
+		.sort((a, b) => {
+			if (a.completed !== b.completed) return a.completed - b.completed;
+			if (a.nearestShiftDistance !== b.nearestShiftDistance) {
+				return a.nearestShiftDistance > b.nearestShiftDistance ? -1 : 1;
+			}
+			return (a.tieBreaker ?? 0) - (b.tieBreaker ?? 0);
+		});
 }
 
 export function findPlanningConflict(

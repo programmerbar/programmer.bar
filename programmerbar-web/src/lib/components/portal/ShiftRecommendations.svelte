@@ -96,10 +96,10 @@
 						sideOffset={6}
 						class="z-50 max-w-[min(20rem,calc(100vw-2rem))] rounded-lg bg-gray-900 px-4 py-3 text-sm text-white shadow-lg"
 					>
-						Bare vakter i samme semester teller. Færre vakter gir høyere prioritet, og vakter
-						innenfor 14 dager i semesteret trekker ned. Ved lik poengsum trekkes rekkefølgen
-						tilfeldig når siden lastes. Styret velges manuelt. Vår: januar–juni. Høst:
-						juli–desember.
+						Færrest fullførte vakter prioriteres først. Ved likt antall kommer den med lengst
+						avstand til nærmeste vakt først, også kommende vakter. Er begge deler likt, trekkes
+						rekkefølgen tilfeldig når siden lastes. Bare vakter i samme semester teller. Styret
+						velges manuelt. Vår: januar–juni. Høst: juli–desember.
 					</Tooltip.Content>
 				</Tooltip.Portal>
 			</Tooltip.Root>

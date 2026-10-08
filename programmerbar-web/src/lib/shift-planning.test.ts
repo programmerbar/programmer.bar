@@ -25,17 +25,18 @@ const assignment = (userId: string, start: string, end: string): Assignment => (
 });
 
 describe('shift recommendations', () => {
-	it('breaks equal scores using the saved random draw instead of name or last shift', () => {
+	it('breaks equal counts and distances using the saved random draw instead of name', () => {
 		const people = [
 			{ ...volunteer('Anna'), tieBreaker: 0.8 },
 			{ ...volunteer('Zara'), tieBreaker: 0.2 }
 		];
 		const shifts = [
 			assignment('Anna', '2026-08-01T16:00Z', '2026-08-01T20:00Z'),
-			assignment('Zara', '2026-09-01T16:00Z', '2026-09-01T20:00Z')
+			assignment('Zara', '2026-08-01T16:00Z', '2026-08-01T20:00Z')
 		];
 		const ranked = rankVolunteers(people, shifts, [], target, now);
-		expect(ranked[0].score).toBe(ranked[1].score);
+		expect(ranked[0].completed).toBe(ranked[1].completed);
+		expect(ranked[0].nearestShiftDistance).toBe(ranked[1].nearestShiftDistance);
 		expect(ranked.map((user) => user.id)).toEqual(['Zara', 'Anna']);
 		expect(rankVolunteers([...people].reverse(), shifts, [], target, now)).toEqual(ranked);
 		expect(
@@ -49,7 +50,7 @@ describe('shift recommendations', () => {
 		).toEqual(['Anna', 'Zara']);
 	});
 
-	it('always prioritizes score before the random draw', () => {
+	it('always prioritizes completed count before the random draw', () => {
 		const people = [
 			{ ...volunteer('new'), tieBreaker: 0.99 },
 			{ ...volunteer('experienced'), tieBreaker: 0 }
@@ -116,7 +117,7 @@ describe('shift recommendations', () => {
 		);
 		expect(rows.map((row) => row.id)).toEqual(['new', 'experienced']);
 	});
-	it('can rank a person with fewer shifts lower when they have a shift the previous week', () => {
+	it('prioritizes fewer completed shifts even with a shift the previous week', () => {
 		const rows = rankVolunteers(
 			[volunteer('recent'), volunteer('rested')],
 			[
@@ -126,10 +127,57 @@ describe('shift recommendations', () => {
 			],
 			[],
 			target,
+			new Date('2026-10-08T12:00Z')
+		);
+		expect(rows.map((row) => row.id)).toEqual(['recent', 'rested']);
+		expect(rows[0].recent).toBe(true);
+	});
+	it('uses distance beyond 14 days before random draws when completed counts match', () => {
+		const rows = rankVolunteers(
+			[
+				{ ...volunteer('near'), tieBreaker: 0 },
+				{ ...volunteer('far'), tieBreaker: 0.9 }
+			],
+			[
+				assignment('near', '2026-09-01T16:00Z', '2026-09-01T20:00Z'),
+				assignment('far', '2026-08-01T16:00Z', '2026-08-01T20:00Z')
+			],
+			[],
+			target,
 			now
 		);
-		expect(rows.map((row) => row.id)).toEqual(['rested', 'recent']);
-		expect(rows[1].recent).toBe(true);
+		expect(rows.map((row) => row.id)).toEqual(['far', 'near']);
+	});
+	it('uses the nearest future or past shift but counts only completed shifts first', () => {
+		const rows = rankVolunteers(
+			[volunteer('future'), volunteer('past')],
+			[
+				assignment('future', '2026-08-01T16:00Z', '2026-08-01T20:00Z'),
+				assignment('future', '2026-10-10T16:00Z', '2026-10-10T20:00Z'),
+				assignment('past', '2026-09-25T16:00Z', '2026-09-25T20:00Z'),
+				assignment('past', '2026-11-01T16:00Z', '2026-11-01T20:00Z'),
+				assignment('past', '2026-11-08T16:00Z', '2026-11-08T20:00Z')
+			],
+			[],
+			target,
+			now
+		);
+		expect(rows.map((row) => row.id)).toEqual(['past', 'future']);
+		expect(rows.map((row) => row.completed)).toEqual([1, 1]);
+		expect(rows[1].nearestShiftDistance).toBe(20 * 60 * 60 * 1000);
+	});
+	it('uses saved random draws when neither volunteer has any shifts', () => {
+		const rows = rankVolunteers(
+			[
+				{ ...volunteer('a'), tieBreaker: 0.9 },
+				{ ...volunteer('b'), tieBreaker: 0.1 }
+			],
+			[],
+			[],
+			target,
+			now
+		);
+		expect(rows.map((row) => row.id)).toEqual(['b', 'a']);
 	});
 	it('flags absence and overlapping assignments while retaining board for manual selection', () => {
 		const rows = rankVolunteers(

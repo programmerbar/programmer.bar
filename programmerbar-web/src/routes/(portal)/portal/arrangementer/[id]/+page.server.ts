@@ -1,4 +1,4 @@
-import { error, fail, redirect } from '@sveltejs/kit';
+import { error, fail, redirect, isHttpError } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import type { EventService } from '$lib/server/services/event.service';
 
@@ -85,6 +85,22 @@ export const actions: Actions = {
 			});
 		}
 
+		const targetEvent = await locals.eventService.findFullEventById(params.id);
+		const targetShift = targetEvent?.shifts.find((shift) => shift.id === shiftId);
+		if (!targetShift || targetShift.startAt <= new Date())
+			return fail(400, { message: 'Vakten finnes ikke eller har allerede startet.' });
+		if (
+			targetShift.members.some(
+				(member) => member.userId === locals.user!.id && member.status === 'accepted'
+			)
+		)
+			return { success: true };
+		try {
+			await locals.shiftService.assertAvailable([{ ...targetShift, users: [locals.user.id] }]);
+		} catch (cause) {
+			if (isHttpError(cause)) return fail(cause.status, { message: cause.body.message });
+			throw cause;
+		}
 		const created = await locals.eventService.createUserShift({
 			shiftId,
 			userId: locals.user.id,

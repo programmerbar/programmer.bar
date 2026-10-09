@@ -1,0 +1,2 @@
+export const checkboxClass =
+	'border-input-border bg-input-background text-primary checked:border-primary checked:bg-primary focus-visible:ring-primary size-4 shrink-0 cursor-pointer rounded border-2 transition-colors focus:ring-0 focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:checked:border-primary dark:checked:bg-primary dark:focus-visible:ring-offset-slate-900';

@@ -45,6 +45,7 @@
 
 	// Main portal navigation items
 	const portalRoutes = [
+		{ name: 'Når jeg ikke kan stå', routeId: '/(portal)/portal/fravaer', icon: Calendar },
 		{
 			name: 'Hjem',
 			routeId: '/(portal)/portal',
@@ -71,6 +72,7 @@
 	const adminRoutes = $derived(
 		user.current?.role === 'board'
 			? ([
+					{ name: 'Vaktoversikt', routeId: '/(portal)/portal/admin/vaktoversikt', icon: Users },
 					{
 						name: 'Status',
 						routeId: '/(portal)/portal/status',

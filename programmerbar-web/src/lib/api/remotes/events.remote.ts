@@ -3,6 +3,7 @@ import type { ShiftEmailProps } from '$lib/server/services/email.service';
 import { normalDate } from '$lib/utils/date';
 import { z } from 'zod';
 import { command, getRequestEvent } from '$app/server';
+import { isHttpError } from '@sveltejs/kit';
 
 export const createEvent = command(CreateEventSchema, async (event) => {
 	const { locals, platform } = getRequestEvent();
@@ -17,6 +18,18 @@ export const createEvent = command(CreateEventSchema, async (event) => {
 	const { name, date, slug, description, shifts } = event;
 
 	await locals.eventService.assertActiveVolunteers(shifts.flatMap((shift) => shift.users));
+	try {
+		await locals.shiftService.assertAvailable(
+			shifts.map((shift) => ({
+				startAt: new Date(shift.startAt),
+				endAt: new Date(shift.endAt),
+				users: shift.users
+			}))
+		);
+	} catch (cause) {
+		if (isHttpError(cause)) return { success: false, message: cause.body.message };
+		throw cause;
+	}
 
 	const createdEvent = await locals.eventService.create(name, date, slug, description);
 	if (!createdEvent) {

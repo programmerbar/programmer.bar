@@ -14,6 +14,7 @@ export const CreateEventSchema = z.object({
 			endAt: z.coerce.date(),
 			users: z.array(z.string())
 		})
+		.refine((shift) => shift.endAt > shift.startAt, 'Slutt må være etter start.')
 		.array()
 });
 

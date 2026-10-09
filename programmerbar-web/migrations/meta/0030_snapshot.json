@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "7cf34021-def4-4271-a8d3-ee7ef8f93136",
-  "prevId": "b72667c7-1e6f-4cd5-9ec8-32b41ec5a89b",
+  "id": "dd124260-ab89-4465-837c-ce3db2fd07ba",
+  "prevId": "7cf34021-def4-4271-a8d3-ee7ef8f93136",
   "tables": {
     "claimed_credits": {
       "name": "claimed_credits",
@@ -623,6 +623,71 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
+    },
+    "unavailability": {
+      "name": "unavailability",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "start_at": {
+          "name": "start_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "end_at": {
+          "name": "end_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "unavailability_user_id_idx": {
+          "name": "unavailability_user_id_idx",
+          "columns": [
+            "user_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "unavailability_user_id_user_id_fk": {
+          "name": "unavailability_user_id_user_id_fk",
+          "tableFrom": "unavailability",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "unavailability_valid_interval": {
+          "name": "unavailability_valid_interval",
+          "value": "\"unavailability\".\"end_at\" > \"unavailability\".\"start_at\""
+        }
+      }
     },
     "user": {
       "name": "user",

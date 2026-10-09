@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ShiftRecommendations from '$lib/components/portal/ShiftRecommendations.svelte';
 	import { X, Plus, Save, Trash2, Clock } from '@lucide/svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import FormInput from '$lib/components/ui/form/FormInput.svelte';
@@ -7,13 +8,13 @@
 	import Checkbox from '$lib/components/ui/Checkbox.svelte';
 	import { enhance } from '$app/forms';
 	import { CreateEventState } from '$lib/states/create-event-state.svelte';
-	import { toDateTimeLocalInput } from '$lib/utils/date.js';
+	import { toLocalDateTimeString as toDateTimeLocalInput } from '$lib/utils/date.js';
 	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
 	import Heading from '$lib/components/ui/Heading.svelte';
 	import { differenceInHours } from 'date-fns';
 
-	let { data } = $props();
+	let { data, form } = $props();
 
 	let showDeleteConfirm = $state(false);
 
@@ -50,6 +51,9 @@
 </svelte:head>
 
 <div class="space-y-10">
+	{#if form?.message}<p role="alert" class="rounded-lg border p-4 text-red-600 dark:text-red-400">
+			{form.message}
+		</p>{/if}
 	<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 		<div class="space-y-2">
 			<Heading level={1}>Rediger arrangementet</Heading>
@@ -286,10 +290,18 @@
 									onclick={() => eventState.addUserToShift(i)}
 								>
 									<Plus class="mr-1 h-4 w-4" />
-									Legg til ansvarlig
+									Velg manuelt
 								</Button>
 							</div>
 
+							<ShiftRecommendations
+								planning={data.planning}
+								drafts={eventState.shifts}
+								index={i}
+								onselect={(user) => {
+									shift.users.push(user);
+								}}
+							/>
 							<input type="hidden" name={`shift[${i}].userCount`} value={shift.users.length} />
 
 							{#if shift.users.length === 0}
@@ -298,7 +310,7 @@
 								</p>
 							{:else}
 								<div class="mt-4 space-y-3">
-									{#each shift.users as user, j (user.id)}
+									{#each shift.users as user, j (j)}
 										<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
 											<Combobox
 												type="single"

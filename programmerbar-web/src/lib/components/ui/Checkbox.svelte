@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { HTMLInputAttributes } from 'svelte/elements';
 	import { cn } from '$lib/utils/cn';
+	import { checkboxClass } from '$lib/components/styles/checkbox';
 
 	type Props = HTMLInputAttributes & {
 		checked?: boolean;
@@ -14,14 +15,5 @@
 	{#if label}
 		<label for={id} class="text-sm font-semibold dark:text-gray-200">{label}</label>
 	{/if}
-	<input
-		{id}
-		type="checkbox"
-		bind:checked
-		class={cn(
-			'dark:checked:bg-primary dark:checked:border-primary h-4 w-4 rounded border-2 dark:border-slate-600 dark:bg-slate-800',
-			className
-		)}
-		{...props}
-	/>
+	<input {id} type="checkbox" bind:checked class={cn(checkboxClass, className)} {...props} />
 </div>

@@ -1,8 +1,11 @@
-import { error, fail, redirect } from '@sveltejs/kit';
+import { error, fail, redirect, isHttpError } from '@sveltejs/kit';
+import { availabilitySchema } from '$lib/validators/availability';
+import type { PlannedShift } from '$lib/shift-planning';
 import type { Actions, PageServerLoad } from './$types';
 import { parseDateTimeLocal } from '$lib/utils/date';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
+	if (locals.user?.role !== 'board') error(403, 'Du har ikke tilgang.');
 	const event = await locals.eventService.findFullEventById(params.id);
 	if (!event) {
 		throw error(404, 'Event not found');
@@ -16,6 +19,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	);
 
 	return {
+		planning: await locals.shiftService.planningData(params.id),
 		event,
 		users
 	};
@@ -43,18 +47,49 @@ export const actions: Actions = {
 		if (!originalEvent) return fail(404, { message: 'Event not found' });
 		const addedUserIds: string[] = [];
 		const count = Number(formData.get('shiftsCount') || 0);
+		if (!Number.isInteger(count) || count < 0 || count > 100)
+			return fail(400, { message: 'Ugyldig antall vakter.' });
+		const planned: PlannedShift[] = [];
 		for (let i = 0; i < count; i++) {
 			const shiftId = formData.get(`shift[${i}].id`)?.toString();
 			const existing = originalEvent.shifts.find((shift) => shift.id === shiftId);
+			if (shiftId && !existing)
+				return fail(400, { message: 'Vakten tilhører ikke arrangementet.' });
+			const period = availabilitySchema.safeParse({
+				startAt: formData.get(`shift[${i}].startAt`),
+				endAt: formData.get(`shift[${i}].endAt`)
+			});
+			if (!period.success)
+				return fail(400, { message: 'Velg gyldig start og slutt for alle vaktene.' });
+			const plannedShift: PlannedShift = { ...period.data, users: [] };
 			const userCount = Number(formData.get(`shift[${i}].userCount`) || 0);
+			if (!Number.isInteger(userCount) || userCount < 0 || userCount > 100)
+				return fail(400, { message: 'Ugyldig antall frivillige.' });
 			for (let j = 0; j < userCount; j++) {
 				const userId = formData.get(`shift[${i}].user[${j}].id`)?.toString();
+				if (userId?.trim()) plannedShift.users.push(userId);
 				if (userId?.trim() && !existing?.members.some((member) => member.user.id === userId)) {
 					addedUserIds.push(userId);
 				}
 			}
+			planned.push(plannedShift);
 		}
 		await locals.eventService.assertActiveVolunteers(addedUserIds);
+		try {
+			await locals.shiftService.assertAvailable(planned, eventId);
+		} catch (cause) {
+			if (isHttpError(cause)) return fail(cause.status, { message: cause.body.message });
+			throw cause;
+		}
+		const ownedShiftIds = new Set(originalEvent.shifts.map((shift) => shift.id));
+		if (
+			formData.getAll('deletedShiftIds').some((id) => !ownedShiftIds.has(String(id))) ||
+			formData
+				.getAll('removedUserShifts')
+				.some((value) => !ownedShiftIds.has(String(value).split('|')[0]))
+		) {
+			return fail(400, { message: 'Vakten tilhører ikke arrangementet.' });
+		}
 
 		const shouldBePublic = formData.get('shouldBePublic') === 'true';
 

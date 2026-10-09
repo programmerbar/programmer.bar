@@ -15,6 +15,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const allSlugs = await locals.eventService.allSlugs();
 
 	return {
+		planning: await locals.shiftService.planningData(),
 		users,
 		allSlugs
 	};

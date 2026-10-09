@@ -6,8 +6,85 @@ import {
 	wholeDayPeriod
 } from './availability-periods';
 import { toLocalDateTimeString } from './utils/date';
+import { overlaps } from './shift-planning';
 
 describe('repeating availability', () => {
+	it('repeats only the selected hours and permits a later shift', () => {
+		const input = recurringAvailabilitySchema.parse({
+			startDate: '2026-10-09',
+			endDate: '2026-10-30',
+			weekdays: [5],
+			allDay: false,
+			startTime: '16:00',
+			endTime: '18:00'
+		});
+		const periods = recurringPeriods(input, new Date('2026-10-01'));
+		expect(periods).toHaveLength(4);
+		for (const period of periods) {
+			expect(toLocalDateTimeString(period.startAt).slice(11)).toBe('16:00');
+			expect(toLocalDateTimeString(period.endAt).slice(11)).toBe('18:00');
+		}
+		expect(periods[0].startAt.toISOString()).toBe('2026-10-09T14:00:00.000Z');
+		expect(periods[3].startAt.toISOString()).toBe('2026-10-30T15:00:00.000Z');
+		expect(
+			overlaps(periods[0], {
+				startAt: new Date('2026-10-09T18:00Z'),
+				endAt: new Date('2026-10-09T22:00Z')
+			})
+		).toBe(false);
+		expect(
+			overlaps(periods[0], {
+				startAt: new Date('2026-10-09T15:00Z'),
+				endAt: new Date('2026-10-09T19:00Z')
+			})
+		).toBe(true);
+	});
+	it('allows midnight or next-day endings on the last selected date', () => {
+		for (const endTime of ['00:00', '02:00']) {
+			const input = recurringAvailabilitySchema.parse({
+				startDate: '2026-10-09',
+				endDate: '2026-10-09',
+				weekdays: [5],
+				allDay: false,
+				startTime: '20:00',
+				endTime
+			});
+			const [period] = recurringPeriods(input, new Date('2026-10-01'));
+			expect(toLocalDateTimeString(period.endAt)).toBe(`2026-10-10T${endTime}`);
+		}
+	});
+	it('rejects missing, invalid, equal and nonexistent local times', () => {
+		const input = {
+			startDate: '2026-03-29',
+			endDate: '2026-03-29',
+			weekdays: [0],
+			allDay: false,
+			startTime: '16:00',
+			endTime: '18:00'
+		};
+		for (const change of [
+			{ startTime: '' },
+			{ endTime: undefined },
+			{ endTime: '24:00' },
+			{ endTime: '16:00' },
+			{ startTime: '02:30', endTime: '04:00' }
+		]) {
+			expect(recurringAvailabilitySchema.safeParse({ ...input, ...change }).success).toBe(false);
+		}
+	});
+	it('omits a timed occurrence that has already ended today', () => {
+		const input = recurringAvailabilitySchema.parse({
+			startDate: '2026-10-09',
+			endDate: '2026-10-16',
+			weekdays: [5],
+			allDay: false,
+			startTime: '16:00',
+			endTime: '18:00'
+		});
+		const periods = recurringPeriods(input, new Date('2026-10-09T17:00Z'));
+		expect(periods).toHaveLength(1);
+		expect(toLocalDateTimeString(periods[0].startAt)).toBe('2026-10-16T16:00');
+	});
 	it('includes both date boundaries and permits a single selected day', () => {
 		const input = { startDate: '2026-09-01', endDate: '2026-09-01', weekdays: [2] };
 		expect(recurringAvailabilitySchema.safeParse(input).success).toBe(true);

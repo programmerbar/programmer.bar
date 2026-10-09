@@ -43,7 +43,10 @@ export const actions: Actions = {
 		const parsed = recurringAvailabilitySchema.safeParse({
 			startDate: data.get('startDate'),
 			endDate: data.get('endDate'),
-			weekdays: data.getAll('weekdays')
+			weekdays: data.getAll('weekdays'),
+			allDay: data.get('allDay') === 'true',
+			startTime: data.get('startTime') ?? undefined,
+			endTime: data.get('endTime') ?? undefined
 		});
 		if (!parsed.success)
 			return fail(400, {
@@ -68,7 +71,11 @@ export const actions: Actions = {
 			.sort((a, b) => ((a + 6) % 7) - ((b + 6) % 7))
 			.map((day) => weekdayNames[day])
 			.join(', ');
-		const groupLabel = `${weekdayLabel} · ${formatDate(parseDateTimeLocal(`${parsed.data.startDate}T00:00`))}–${formatDate(parseDateTimeLocal(`${parsed.data.endDate}T00:00`))}`;
+		const timeLabel =
+			parsed.data.allDay === false
+				? ` kl. ${parsed.data.startTime}–${parsed.data.endTime}${parsed.data.endTime! < parsed.data.startTime! ? ' neste dag' : ''}`
+				: '';
+		const groupLabel = `${weekdayLabel}${timeLabel} · ${formatDate(parseDateTimeLocal(`${parsed.data.startDate}T00:00`))}–${formatDate(parseDateTimeLocal(`${parsed.data.endDate}T00:00`))}`;
 		const conflict = await locals.shiftService.addAbsences(locals.user.id, periods, groupLabel);
 		return {
 			message: `${periods.length} perioder er lagret.${conflict ? ' Du har allerede vakt i en av periodene. Kontakt frivilligansvarlig for å bytte. Vaktene er ikke fjernet.' : ''}`

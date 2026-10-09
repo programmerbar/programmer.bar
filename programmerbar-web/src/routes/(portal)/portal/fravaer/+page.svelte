@@ -11,6 +11,8 @@
 	let startDate = $state('');
 	let endDate = $state('');
 	let allDay = $state(true);
+	let startTime = $state('');
+	let endTime = $state('');
 	let weekdays = $state<string[]>([]);
 	let saving = $state(false);
 	let selectedIds = $state<string[]>([]);
@@ -29,7 +31,14 @@
 		{ value: '0', label: 'Søndag' }
 	];
 	const selection = $derived(
-		recurringAvailabilitySchema.safeParse({ startDate, endDate, weekdays })
+		recurringAvailabilitySchema.safeParse({
+			startDate,
+			endDate,
+			weekdays,
+			allDay,
+			startTime,
+			endTime
+		})
 	);
 	const preview = $derived(
 		selection.success
@@ -97,6 +106,35 @@
 					{/if}</label
 				>
 			</div>
+			<label class="flex items-center gap-2"
+				><input type="checkbox" class={checkboxClass} bind:checked={allDay} />Hele dager</label
+			>
+			<input type="hidden" name="allDay" value={String(allDay)} />
+			{#if !allDay}
+				<div class="grid gap-4 sm:grid-cols-2">
+					<label class="flex flex-col gap-2"
+						>Fra klokken<Input
+							type="time"
+							name="startTime"
+							bind:value={startTime}
+							required
+						/></label
+					>
+					<label class="flex flex-col gap-2"
+						>Til klokken<Input type="time" name="endTime" bind:value={endTime} required /></label
+					>
+				</div>
+				<p class="text-sm">
+					{#if mode === 'recurring'}
+						Samme klokkeslett hver valgt ukedag. Slutt før start betyr neste dag; bruk 00:00 for
+						midnatt. Norsk tid.
+					{:else}
+						Fra klokkeslettet på startdatoen til klokkeslettet på sluttdatoen. Norsk tid.
+					{/if}
+				</p>
+			{:else if mode === 'single'}
+				<p class="text-sm">Alle dager i perioden tas med, også sluttdatoen.</p>
+			{/if}
 			{#if mode === 'recurring'}
 				<fieldset class="space-y-2">
 					<legend class="mb-2 font-medium">Hvilke ukedager?</legend>
@@ -114,7 +152,9 @@
 						{/each}
 					</div>
 				</fieldset>
-				<p class="text-sm">Gjelder hele dagen på valgte ukedager, til og med sluttdatoen.</p>
+				<p class="text-sm">
+					{allDay ? 'Gjelder hele dagen på' : 'Tidsrommet gjentas på'} valgte ukedager, til og med sluttdatoen.
+				</p>
 				{#if startDate && endDate && weekdays.length && !selection.success}
 					<p role="status" class="text-sm">{selection.error.issues[0]?.message}</p>
 				{:else if selection.success && !preview.length}
@@ -125,30 +165,12 @@
 						<summary class="cursor-pointer">{preview.length} dager valgt – se datoene</summary>
 						<ul class="mt-2 max-h-48 overflow-y-auto">
 							{#each preview as period (period.startAt.getTime())}<li>
-									{formatDate(period.startAt)}
+									{allDay
+										? formatDate(period.startAt)
+										: `${normalDate(period.startAt)} – ${normalDate(period.endAt)}`}
 								</li>{/each}
 						</ul>
 					</details>
-				{/if}
-			{:else}
-				<label class="flex items-center gap-2"
-					><input type="checkbox" class={checkboxClass} bind:checked={allDay} />Hele dager</label
-				>
-				<input type="hidden" name="allDay" value={String(allDay)} />
-				{#if !allDay}
-					<div class="grid gap-4 sm:grid-cols-2">
-						<label class="flex flex-col gap-2"
-							>Fra klokken<Input type="time" name="startTime" required /></label
-						>
-						<label class="flex flex-col gap-2"
-							>Til klokken<Input type="time" name="endTime" required /></label
-						>
-					</div>
-					<p class="text-sm">
-						Fra klokkeslettet på startdatoen til klokkeslettet på sluttdatoen. Norsk tid.
-					</p>
-				{:else}
-					<p class="text-sm">Alle dager i perioden tas med, også sluttdatoen.</p>
 				{/if}
 			{/if}
 			<Button type="submit" disabled={saving || (mode === 'recurring' && !preview.length)}
@@ -187,7 +209,7 @@
 					<ul class="divide-portal-border mt-2 divide-y">
 						{#each group.periods as absence (absence.id)}
 							<li class="flex flex-wrap items-center justify-between gap-3 py-3">
-								<span>{formatDate(absence.startAt)}</span>
+								<span>{normalDate(absence.startAt)} – {normalDate(absence.endAt)}</span>
 								<form method="post" action="?/delete" use:enhance>
 									<input type="hidden" name="id" value={absence.id} />
 									<Button
